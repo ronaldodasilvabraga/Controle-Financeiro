@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
 --bg:#020202;
@@ -234,10 +235,44 @@ background:var(--bg-panel-2); border:1px solid var(--border); border-radius:10px
 .switch-radio input:checked + label{background:var(--olive-glow); color:var(--olive-light); border-color:var(--olive-dark); font-weight:600;}
 .vei-summary{display:flex; flex-wrap:wrap; gap:24px; font-size:12.5px;}
 .vei-summary b{color:var(--white);}
+
+/* AUTH / LOGIN */
+#authScreen{position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:2000; padding:20px;}
+.auth-card{width:420px; max-width:100%; background:var(--bg-panel); border:1px solid var(--olive-dark); border-radius:16px; padding:32px; box-shadow:0 0 0 1px rgba(181,227,56,.08), 0 24px 70px rgba(0,0,0,.6);}
+.auth-brand{display:flex; align-items:center; gap:12px; margin-bottom:22px; justify-content:center;}
+.auth-brand .brand-text{font-weight:700; font-size:15px; text-align:left;}
+.auth-brand .brand-text span{display:block; font-size:10.5px; color:var(--muted-2); text-transform:uppercase; letter-spacing:.08em; margin-top:2px;}
+.auth-card h2{font-size:18px; font-weight:700; text-align:center; margin-bottom:4px; color:var(--olive-light);}
+.auth-msg{min-height:18px; font-size:12px; text-align:center; margin-bottom:12px; color:var(--danger-light);}
+.auth-note{margin-top:16px; font-size:11px; color:var(--muted-2); text-align:center; line-height:1.5;}
+#btnLogout{display:none;}
+#btnLogout:hover{border-color:var(--danger-light); color:var(--danger-light);}
 </style>
 </head>
 <body>
-<div class="app">
+
+<!-- TELA DE LOGIN / CADASTRO -->
+<div id="authScreen">
+<div class="auth-card">
+<div class="auth-brand">
+<div class="brand-mark">$</div>
+<div class="brand-text">Meu Financeiro<span>CFO & Gestão Pessoal</span></div>
+</div>
+<h2 id="authTitle">Entrar</h2>
+<p class="auth-msg" id="authMsg"></p>
+<div class="switch-radio" style="justify-content:center; margin-bottom:16px;">
+<input type="radio" name="authMode" id="authModeLogin" value="login" checked><label for="authModeLogin">Entrar</label>
+<input type="radio" name="authMode" id="authModeSignup" value="signup"><label for="authModeSignup">Criar conta</label>
+</div>
+<div class="field full"><label class="field-label">E-mail</label><input type="email" id="authEmail" class="full" autocomplete="email" placeholder="voce@exemplo.com"></div>
+<div class="field full" style="margin-top:12px;"><label class="field-label">Senha</label><input type="password" id="authPass" class="full" autocomplete="current-password" placeholder="mínimo 6 caracteres"></div>
+<div class="field full" id="authPassConfirmBox" style="display:none; margin-top:12px;"><label class="field-label">Confirmar senha</label><input type="password" id="authPassConfirm" class="full" autocomplete="new-password"></div>
+<button class="btn primary full" id="authSubmit" style="margin-top:16px;">Entrar</button>
+<div class="auth-note">Seus dados são armazenados de forma segura no Supabase e acessíveis apenas com seu login e senha.</div>
+</div>
+</div>
+
+<div class="app" style="display:none;">
 
 <!-- SIDEBAR -->
 <div class="sidebar">
@@ -281,6 +316,7 @@ background:var(--bg-panel-2); border:1px solid var(--border); border-radius:10px
 <button class="btn" id="btnImportTop">⇩ Importar arquivo</button>
 <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
 <button class="btn primary" id="btnExportTop">⇧ Exportar</button>
+<button class="btn" id="btnLogout">Sair</button>
 </div>
 </div>
 
@@ -605,13 +641,22 @@ Distribuição Inteligente de Rendimentos (Modelo CFO)
 </div>
 
 <script>
+/* ============================= SUPABASE · CONFIGURAÇÃO ============================= */
+// Preencha abaixo com os dados do seu projeto Supabase.
+// Onde encontrar: Supabase Dashboard > Project Settings > API.
+// A anon key é pública por design (a segurança é garantida pelas políticas RLS no banco).
+// NUNCA coloque a service_role key neste arquivo.
+const SUPABASE_URL = 'https://spipkkvoikvdkjzrizxz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwaXBra3ZvaWt2ZGtqenJpenh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNzQ5NTMsImV4cCI6MjEwMTk1MDk1M30.VlWKVKi6S27bfq1FgGzOZqBPlKX-s1Li8KewmSV5_Ns';
+const SEED_DEMO_NEW_USER = true; // cria dados de demonstração para contas novas
+
 /* ============================= DADOS ============================= */
 const CATEGORIES = {
 receita: {'Salário':['Salário CLT','13º Salário'],'Renda Extra':['Freelance','Comissões'],'Investimentos':['Dividendos','Juros'],'Outras Receitas':['Reembolsos','Vendas']},
 custo: {'Moradia':['Aluguel','Condomínio','IPTU','Energia','Água','Internet'],'Alimentação':['Mercado','Feira','Vale Alimentação'],'Transporte':['Combustível','Manutenção','Seguro'],'Saúde':['Plano de Saúde','Farmácia'],'Educação':['Cursos','Mensalidade']},
 despesa: {'Lazer':['Restaurantes','Cinema/Shows','Viagens','Presentes'],'Compras':['Vestuário','Eletrônicos'],'Assinaturas':['Streaming','Aplicativos','Academia'],'Cuidados Pessoais':['Salão/Barbearia'],'Outros':['Doações','Diversos','Fatura Cartão']}
 };
-const BUDGETS = {'Salário':9000,'Renda Extra':1000,'Investimentos':200,'Outras Receitas':100,'Moradia':2600,'Alimentação':1300,'Transporte':800,'Saúde':800,'Educação':300,'Lazer':600,'Compras':400,'Assinaturas':250,'Cuidados Pessoais':200,'Outros':150};
+let BUDGETS = {'Salário':9000,'Renda Extra':1000,'Investimentos':200,'Outras Receitas':100,'Moradia':2600,'Alimentação':1300,'Transporte':800,'Saúde':800,'Educação':300,'Lazer':600,'Compras':400,'Assinaturas':250,'Cuidados Pessoais':200,'Outros':150};
 
 let ACCOUNTS = [
 {id:1, name:'Itaú Conta Corrente', initialBalance: 5000},
@@ -667,6 +712,14 @@ function listaPessoas(){
 return [...new Set(transactions.map(t=>t.pessoa).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
 }
 
+let investmentEvolution = [];
+let totalInvestido = 0;
+let INVESTMENTS = [];
+
+function seedDemoData(){
+transactions = [];
+idCounter = 1;
+cardInvoices = {};
 MONTHS.slice(0, 19).forEach((month,i)=>{
 const m = month.split('-')[1];
 const salarioBase = 8500 + Math.floor(i/6)*400;
@@ -705,9 +758,9 @@ if(chance(0.15)) addTx(month+'-'+String(randInt(1,28)).padStart(2,'0'),'despesa'
 });
 
 let investBase = 25000;
-const investmentEvolution = MONTHS.map((month,i)=>{investBase += rand(400,900)+i*15; return {month, total: Math.round(investBase)};});
-const totalInvestido = investmentEvolution[investmentEvolution.length-1].total;
-let INVESTMENTS = [
+investmentEvolution = MONTHS.map((month,i)=>{investBase += rand(400,900)+i*15; return {month, total: Math.round(investBase)};});
+totalInvestido = investmentEvolution[investmentEvolution.length-1].total;
+INVESTMENTS = [
 {nome:'Tesouro Selic 2029', tipo:'Renda Fixa', valorInvestido: totalInvestido*0.30, valorAtual: totalInvestido*0.32},
 {nome:'CDB Banco XP 110% CDI', tipo:'Renda Fixa', valorInvestido: totalInvestido*0.15, valorAtual: totalInvestido*0.16},
 {nome:'Ações (Carteira BR)', tipo:'Renda Variável', valorInvestido: totalInvestido*0.20, valorAtual: totalInvestido*0.18},
@@ -715,6 +768,8 @@ let INVESTMENTS = [
 {nome:'Previdência Privada', tipo:'Previdência', valorInvestido: totalInvestido*0.12, valorAtual: totalInvestido*0.125},
 {nome:'Reserva de Emergência (CDB liquidez diária)', tipo:'Reserva de Emergência', valorInvestido: totalInvestido*0.08, valorAtual: totalInvestido*0.08}
 ].map(x=>({...x, valorInvestido:Math.round(x.valorInvestido), valorAtual:Math.round(x.valorAtual)}));
+seedCarData();
+}
 
 /* ============================= HELPERS ============================= */
 function fmtBRL(n){ n = n||0; return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
@@ -1343,6 +1398,7 @@ function updateBudget(cat, val){
 BUDGETS[cat] = Math.max(0, parseFloat(val)||0);
 renderOrcamento();
 if(document.getElementById('tab-dashboard').classList.contains('active')) renderDashboard();
+queueSave();
 }
 
 document.getElementById('compMesA').addEventListener('change', renderComparativo);
@@ -2119,28 +2175,13 @@ const a = document.createElement('a'); a.href=url; a.download=`backup_financeiro
 });
 
 /* ============================= MANUTENÇÃO DE CARRO ============================= */
-const CAR_KEY = 'cfo_car_data_v1';
 let VEHICLE = { nome:'Meu Carro', modelo:'', ano:null, odometroAtual:0, tanqueLitros:null };
 let MAINT_ALERTS = [];
 let ABASTECIMENTOS = [];
 let MANUTENCOES = [];
 
 function saveCarData(){
-try{ localStorage.setItem(CAR_KEY, JSON.stringify({VEHICLE, MAINT_ALERTS, ABASTECIMENTOS, MANUTENCOES})); }catch(e){}
-}
-function loadCarData(){
-try{
-const raw = localStorage.getItem(CAR_KEY);
-if(raw){
-const d = JSON.parse(raw);
-if(d.VEHICLE) VEHICLE = d.VEHICLE;
-if(d.MAINT_ALERTS) MAINT_ALERTS = d.MAINT_ALERTS;
-if(d.ABASTECIMENTOS) ABASTECIMENTOS = d.ABASTECIMENTOS;
-if(d.MANUTENCOES) MANUTENCOES = d.MANUTENCOES;
-return true;
-}
-}catch(e){}
-return false;
+queueSave();
 }
 function seedCarData(){
 VEHICLE = { nome:'Meu Carro', modelo:'Hatch 1.0 Flex', ano:2021, odometroAtual:45200, tanqueLitros:45 };
@@ -2553,6 +2594,177 @@ function deleteManutencao(id){
 if(confirm('Excluir este registro de manutenção?')){ MANUTENCOES = MANUTENCOES.filter(x=>x.id!==id); saveCarData(); renderVeiculo(); }
 }
 
+/* ============================= SUPABASE · AUTENTICAÇÃO E PERSISTÊNCIA ============================= */
+let supabaseClient = null;
+let currentUser = null;
+let stateLoaded = false;
+let restoring = false;
+let saveTimer = null;
+
+function supabaseConfigured(){
+return SUPABASE_URL && SUPABASE_URL.indexOf('SEU-PROJETO') === -1 &&
+SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.indexOf('SUA-CHAVE') === -1;
+}
+
+function initSupabase(){
+if(!supabaseConfigured()){
+document.getElementById('authMsg').innerHTML = '<span style="color:#FFCC00;">Configuração pendente. Edite o arquivo <b>Painel_Financeiro_CFO_Edition_v2.html</b> e preencha <b>SUPABASE_URL</b> e <b>SUPABASE_ANON_KEY</b> com os dados do seu projeto Supabase (Project Settings &gt; API).</span>';
+document.getElementById('authSubmit').disabled = true;
+return;
+}
+supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+supabaseClient.auth.onAuthStateChange((event, session)=>{
+if(event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED'){
+currentUser = session ? session.user : null;
+if(currentUser) afterLogin();
+} else if(event === 'SIGNED_OUT'){
+showAuthScreen();
+}
+});
+supabaseClient.auth.getSession().then(({data})=>{
+if(data && data.session && !currentUser){
+currentUser = data.session.user;
+afterLogin();
+}
+});
+}
+
+function showAuthScreen(){
+stateLoaded = false;
+currentUser = null;
+document.getElementById('authScreen').style.display = 'flex';
+document.querySelector('.app').style.display = 'none';
+document.getElementById('btnLogout').style.display = 'none';
+}
+
+async function afterLogin(){
+if(stateLoaded) return;
+stateLoaded = true;
+currentUser = currentUser || (supabaseClient ? (await supabaseClient.auth.getUser()).data.user : null);
+document.getElementById('authScreen').style.display = 'none';
+document.querySelector('.app').style.display = 'flex';
+document.getElementById('btnLogout').style.display = '';
+await loadUserState();
+populateMonthSelects();
+populateCategoryFilters();
+renderAll();
+}
+
+function buildState(){
+return {
+transactions, accounts:ACCOUNTS, cards:CARDS, investments:INVESTMENTS, goals:GOALS,
+budgets:BUDGETS, cardInvoices, investmentEvolution, totalInvestido,
+vehicle:VEHICLE, maintAlerts:MAINT_ALERTS, abastecimentos:ABASTECIMENTOS, manutencoes:MANUTENCOES
+};
+}
+
+function applyState(s){
+if(!s) return;
+if(s.transactions) transactions = s.transactions;
+if(s.accounts) ACCOUNTS = s.accounts;
+if(s.cards) CARDS = s.cards;
+if(s.investments) INVESTMENTS = s.investments;
+if(s.goals) GOALS = s.goals;
+if(s.budgets) BUDGETS = s.budgets;
+if(s.cardInvoices) cardInvoices = s.cardInvoices;
+if(s.investmentEvolution) investmentEvolution = s.investmentEvolution;
+if(s.totalInvestido) totalInvestido = s.totalInvestido;
+if(s.vehicle) VEHICLE = s.vehicle;
+if(s.maintAlerts) MAINT_ALERTS = s.maintAlerts;
+if(s.abastecimentos) ABASTECIMENTOS = s.abastecimentos;
+if(s.manutencoes) MANUTENCOES = s.manutencoes;
+let maxId = 0;
+[transactions, ACCOUNTS, INVESTMENTS, GOALS, MAINT_ALERTS, ABASTECIMENTOS, MANUTENCOES].forEach(arr=>{
+(arr||[]).forEach(x=>{ if(x && x.id && x.id>maxId) maxId=x.id; });
+});
+idCounter = maxId + 1;
+}
+
+async function loadUserState(){
+if(!supabaseClient || !currentUser) return;
+const { data, error } = await supabaseClient.from('user_state').select('data').eq('user_id', currentUser.id).maybeSingle();
+if(error) console.error('Erro ao carregar dados do Supabase:', error.message);
+if(data && data.data){
+restoring = true;
+applyState(data.data);
+restoring = false;
+} else {
+if(SEED_DEMO_NEW_USER) seedDemoData();
+await saveState();
+}
+}
+
+function queueSave(){
+if(!supabaseClient || !currentUser || restoring) return;
+clearTimeout(saveTimer);
+saveTimer = setTimeout(saveState, 700);
+}
+
+async function saveState(){
+if(!supabaseClient || !currentUser) return;
+const payload = buildState();
+const { error } = await supabaseClient.from('user_state').upsert(
+{ user_id: currentUser.id, data: payload, updated_at: new Date().toISOString() },
+{ onConflict: 'user_id' }
+);
+if(error) console.error('Erro ao salvar no Supabase:', error.message);
+}
+
+/* TELA DE LOGIN */
+function toggleAuthMode(){
+const isSignup = document.querySelector('input[name="authMode"]:checked').value === 'signup';
+document.getElementById('authTitle').textContent = isSignup ? 'Criar conta' : 'Entrar';
+document.getElementById('authSubmit').textContent = isSignup ? 'Criar conta' : 'Entrar';
+document.getElementById('authPassConfirmBox').style.display = isSignup ? 'block' : 'none';
+document.getElementById('authMsg').textContent = '';
+}
+document.getElementById('authModeLogin').addEventListener('change', toggleAuthMode);
+document.getElementById('authModeSignup').addEventListener('change', toggleAuthMode);
+
+function authMessage(msg, color){
+const el = document.getElementById('authMsg');
+el.textContent = msg;
+el.style.color = color || 'var(--danger-light)';
+}
+
+async function handleAuthSubmit(){
+if(!supabaseClient){ authMessage('Configuração pendente. Preencha SUPABASE_URL e SUPABASE_ANON_KEY.'); return; }
+const email = document.getElementById('authEmail').value.trim();
+const password = document.getElementById('authPass').value;
+if(!email || !password){ authMessage('Informe e-mail e senha.'); return; }
+if(password.length < 6){ authMessage('A senha deve ter ao menos 6 caracteres.'); return; }
+const isSignup = document.querySelector('input[name="authMode"]:checked').value === 'signup';
+if(isSignup && password !== document.getElementById('authPassConfirm').value){ authMessage('As senhas não conferem.'); return; }
+authMessage('Aguarde...', 'var(--muted)');
+try{
+if(isSignup){
+const { data, error } = await supabaseClient.auth.signUp({ email, password });
+if(error) throw error;
+if(data.session){
+authMessage('Conta criada e conectada!', 'var(--olive-light)');
+} else {
+authMessage('Conta criada! Verifique seu e-mail para confirmar e depois entre.', 'var(--olive-light)');
+document.querySelector('input[name="authMode"][value="login"]').checked = true;
+toggleAuthMode();
+}
+} else {
+const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+if(error) throw error;
+}
+} catch(err){
+authMessage('Erro: ' + (err.message || 'Falha na autenticação.'));
+}
+}
+document.getElementById('authSubmit').addEventListener('click', handleAuthSubmit);
+document.getElementById('authEmail').addEventListener('keydown', e=>{ if(e.key==='Enter') handleAuthSubmit(); });
+document.getElementById('authPass').addEventListener('keydown', e=>{ if(e.key==='Enter') handleAuthSubmit(); });
+document.getElementById('authPassConfirm').addEventListener('keydown', e=>{ if(e.key==='Enter') handleAuthSubmit(); });
+
+document.getElementById('btnLogout').addEventListener('click', async ()=>{
+if(supabaseClient) await supabaseClient.auth.signOut();
+showAuthScreen();
+});
+
 /* ============================= RENDER ALL ============================= */
 function renderAll(){
 const activeTab = document.querySelector('.tab.active').id;
@@ -2567,13 +2779,11 @@ else if(activeTab === 'tab-metas') renderMetas();
 else if(activeTab === 'tab-veiculo') renderVeiculo();
 else if(activeTab === 'tab-dre') renderDre();
 else if(activeTab === 'tab-balanco') renderBalanco();
+queueSave();
 }
 
 // Inicialização
-populateMonthSelects();
-populateCategoryFilters();
-if(!loadCarData()) seedCarData();
-renderAll();
+initSupabase();
 </script>
 </body>
 </html>
