@@ -1,0 +1,3060 @@
+<!DOCTYPE html>
+<!-- saved from url=(0086)https://8080-1a2c07d7ebfa267a.monkeycode-ai.live/Painel_Financeiro_CFO_Edition_v2.html -->
+<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Controle Financeiro Pessoal - CFO Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./Painel de Controle Financeiro Pessoal - CFO Edition_files/css2" rel="stylesheet">
+<script src="./Painel de Controle Financeiro Pessoal - CFO Edition_files/xlsx.full.min.js.baixados"></script>
+<script src="./Painel de Controle Financeiro Pessoal - CFO Edition_files/chart.umd.min.js.baixados"></script>
+<script src="./Painel de Controle Financeiro Pessoal - CFO Edition_files/supabase-js@2"></script>
+<style>
+:root{
+--bg:#020202;
+--bg-panel:#0e0f0a;
+--bg-panel-2:#14150e;
+--border:#2a2c1c;
+
+--olive:#96C728;
+--olive-light:#B5E338;
+--olive-dark:#455910;
+--olive-glow: rgba(181,227,56,0.15);
+
+--white:#FFFFFF;
+--muted:#B9BFA6;
+--muted-2:#7d8368;
+
+--danger:#FF3B30;
+--danger-light:#FF6B6B;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{
+background:var(--bg);
+color:var(--white);
+font-family:'Montserrat',sans-serif;
+font-size:14px;
+line-height:1.5;
+-webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--olive); color:#000;}
+::-webkit-scrollbar{width:8px; height:8px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--olive-dark); border-radius:4px;}
+a{color:var(--olive-light);}
+
+.app{display:flex; min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{
+width:230px; flex-shrink:0;
+background:var(--bg-panel);
+border-right:1px solid var(--border);
+padding:24px 14px;
+display:flex; flex-direction:column; gap:6px;
+position:sticky; top:0; height:100vh; overflow-y:auto;
+}
+.brand{
+display:flex; align-items:center; gap:10px;
+padding:0 8px 22px 8px; margin-bottom:10px;
+border-bottom:1px solid var(--border);
+}
+.brand-mark{
+width:32px; height:32px; border-radius:8px;
+background:linear-gradient(135deg, var(--olive) 0%, var(--olive-dark) 100%);
+display:flex; align-items:center; justify-content:center;
+font-weight:800; font-size:15px; color:#000;
+}
+.brand-text{font-weight:700; font-size:13px; letter-spacing:0.02em; line-height:1.25;}
+.brand-text span{display:block; font-weight:400; font-size:10.5px; color:var(--muted-2); text-transform:uppercase; letter-spacing:0.08em; margin-top:2px;}
+
+.navgroup-label{font-size:10px; text-transform:uppercase; letter-spacing:0.12em; color:var(--muted-2); padding:14px 10px 6px;}
+.navbtn{
+display:flex; align-items:center; gap:10px;
+padding:10px 12px; border-radius:8px;
+background:transparent; border:1px solid transparent; color:var(--muted);
+font-family:inherit; font-size:13px; font-weight:500; text-align:left; cursor:pointer;
+transition:background .15s, color .15s, border-color .15s;
+}
+.navbtn .ico{width:16px; text-align:center; font-size:14px; opacity:.85;}
+.navbtn:hover{background:var(--bg-panel-2); color:var(--white);}
+.navbtn.active{background:var(--olive-glow); color:var(--olive-light); border-color:var(--olive-dark); font-weight:600;}
+
+/* MAIN */
+.main{flex:1; min-width:0; padding:26px 32px 60px; max-width:1400px;}
+.topbar{
+display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px;
+margin-bottom:22px; padding-bottom:18px; border-bottom:1px solid var(--border);
+}
+.topbar h1{font-size:21px; font-weight:700; letter-spacing:-0.01em;}
+.topbar .sub{color:var(--muted); font-size:12.5px; margin-top:3px;}
+.topbar-controls{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+
+.btn{
+background:var(--bg-panel-2); color:var(--white); border:1px solid var(--border);
+padding:9px 14px; border-radius:7px; font-family:inherit; font-size:12.5px; font-weight:600;
+cursor:pointer; display:inline-flex; align-items:center; gap:7px; transition:all .15s; white-space:nowrap;
+}
+.btn:hover{border-color:var(--olive); color:var(--olive-light);}
+.btn.primary{background:var(--olive); color:#0a0a06; border-color:var(--olive);}
+.btn.primary:hover{background:var(--olive-light); color:#000;}
+.btn.danger{background:rgba(255,59,48,.15); color:var(--danger-light); border-color:var(--danger-light);}
+.btn.danger:hover{background:var(--danger); color:#fff;}
+.btn.small{padding:6px 10px; font-size:11.5px;}
+input[type=file]{display:none;}
+select, input[type=text], input[type=number], input[type=date], input[type=month]{
+background:var(--bg-panel-2); color:var(--white); border:1px solid var(--border);
+padding:8px 11px; border-radius:7px; font-family:inherit; font-size:12.5px; outline:none;
+}
+select:focus, input:focus{border-color:var(--olive);}
+label.field-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted-2); display:block; margin-bottom:5px;}
+.field{display:flex; flex-direction:column; gap:0; min-width:150px;}
+
+.tab{display:none;}
+.tab.active{display:block; animation:fade .25s ease;}
+@keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+/* GRID / CARDS */
+.grid{display:grid; gap:16px;}
+.grid-4{grid-template-columns:repeat(4,1fr);}
+.grid-3{grid-template-columns:repeat(3,1fr);}
+.grid-2{grid-template-columns:repeat(2,1fr);}
+@media(max-width:1100px){.grid-4{grid-template-columns:repeat(2,1fr);} .grid-3{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:700px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr;}}
+
+.card{
+background:var(--bg-panel); border:1px solid var(--border); border-radius:12px; padding:18px;
+}
+.kpi .label{font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted-2); font-weight:600;}
+.kpi .value{font-size:26px; font-weight:800; margin-top:8px; letter-spacing:-0.01em;}
+.kpi .delta{font-size:11.5px; margin-top:6px; color:var(--muted);}
+.kpi .delta.up{color:var(--olive-light);}
+.kpi .delta.down{color:var(--danger-light);}
+.kpi .bar-track{height:5px; background:var(--bg-panel-2); border-radius:3px; margin-top:10px; overflow:hidden;}
+.kpi .bar-fill{height:100%; background:var(--olive);}
+
+.section-title{font-size:14px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:10px;}
+.section-title .tag{font-size:10.5px; color:var(--muted-2); font-weight:500; text-transform:none;}
+.chart-wrap{position:relative; height:260px;}
+.chart-wrap.tall{height:320px;}
+
+table{width:100%; border-collapse:collapse; font-size:12.5px;}
+thead th{
+text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted-2);
+padding:8px 10px; border-bottom:1px solid var(--border); font-weight:600; white-space:nowrap;
+}
+tbody td{padding:9px 10px; border-bottom:1px solid #1a1c11; vertical-align:middle;}
+tbody tr:hover{background:var(--bg-panel-2);}
+tfoot td{padding:10px; font-weight:700; border-top:1px solid var(--olive-dark); color:var(--olive-light);}
+.num{text-align:right; font-variant-numeric:tabular-nums;}
+.pill{display:inline-block; padding:3px 9px; border-radius:20px; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;}
+.pill.receita{background:rgba(181,227,56,.15); color:var(--olive-light);}
+.pill.custo{background:rgba(255,255,255,.08); color:var(--white);}
+.pill.despesa{background:rgba(255,59,48,.15); color:var(--danger-light);}
+.pos{color:var(--olive-light); font-weight:700;}
+.neg{color:var(--danger-light); font-weight:700;}
+.table-scroll{max-height:480px; overflow:auto; border-radius:8px;}
+
+.progress-row{margin-bottom:14px;}
+.progress-row .prow-top{display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:6px;}
+.progress-row .prow-top b{font-weight:700;}
+.ptrack{height:8px; background:var(--bg-panel-2); border-radius:5px; overflow:hidden; border:1px solid var(--border);}
+.pfill{height:100%; background:linear-gradient(90deg, var(--olive-dark), var(--olive-light));}
+.pfill.warn{background:linear-gradient(90deg, #8a7300, #ffcc00);}
+.pfill.over{background:linear-gradient(90deg, #8a140e, var(--danger-light));}
+
+.filters-bar{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:18px; background:var(--bg-panel); border:1px solid var(--border); padding:14px 16px; border-radius:10px;}
+.delete-bar{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:18px; background:rgba(255,59,48,0.05); border:1px solid rgba(255,59,48,0.25); padding:14px 16px; border-radius:10px;}
+
+.insight{display:flex; gap:10px; padding:11px 12px; border-radius:8px; background:var(--bg-panel-2); border:1px solid var(--border); margin-bottom:8px; font-size:12.5px;}
+.insight .dot{width:8px; height:8px; border-radius:50%; margin-top:4px; flex-shrink:0;}
+.insight.ok .dot{background:var(--olive-light);}
+.insight.warn .dot{background:#FFCC00;}
+.insight.bad .dot{background:var(--danger-light);}
+
+.goal-card{background:var(--bg-panel-2); border:1px solid var(--border); border-radius:10px; padding:16px;}
+.goal-card h4{font-size:13.5px; font-weight:700; margin-bottom:3px;}
+.goal-card .meta{font-size:11px; color:var(--muted-2); margin-bottom:10px;}
+.goal-card .amounts{display:flex; justify-content:space-between; font-size:12px; margin-top:8px; color:var(--muted);}
+
+.card-tile{background:var(--bg-panel-2); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:14px;}
+.card-tile-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+.card-tile-head h4{font-size:14px; font-weight:700;}
+.card-tile-head .type-pill{font-size:10px; color:var(--muted-2); border:1px solid var(--border); padding:2px 8px; border-radius:20px;}
+
+.dre-table td.dre-label{font-weight:600;}
+.dre-table tr.total td{color:var(--olive-light); font-weight:800; border-top:1px solid var(--olive-dark); border-bottom:none;}
+.dre-table tr.sub td{color:var(--muted);}
+.dre-table tr.neg-row td.num{color:var(--danger-light);}
+
+.bp-col h3{font-size:12.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted-2); margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--border);}
+.bp-line{display:flex; justify-content:space-between; padding:7px 0; font-size:12.5px; border-bottom:1px dashed #1c1e12;}
+.bp-line.subtotal{font-weight:700; color:var(--olive-light); border-bottom:1px solid var(--olive-dark); padding-top:9px;}
+.bp-line.grandtotal{font-weight:800; font-size:14px; color:var(--white); border-top:1px solid var(--olive); margin-top:6px; padding-top:10px;}
+
+.footer-note{margin-top:40px; padding-top:16px; border-top:1px solid var(--border); font-size:11px; color:var(--muted-2); text-align:center;}
+
+/* MODAL / CRUD */
+.modal-overlay{position:fixed; inset:0; background:rgba(0,0,0,.75); display:none; align-items:center; justify-content:center; z-index:1000; padding:20px;}
+.modal-box{background:var(--bg-panel); border:1px solid var(--olive-dark); border-radius:14px; padding:24px; width:480px; max-width:100%; max-height:88vh; overflow-y:auto; box-shadow:0 0 0 1px rgba(181,227,56,.1), 0 20px 60px rgba(0,0,0,.6);}
+.modal-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid var(--border);}
+.modal-head h3{font-size:15px; font-weight:700; color:var(--olive-light);}
+.modal-close{background:none; border:none; color:var(--muted); font-size:22px; cursor:pointer; line-height:1;}
+.modal-close:hover{color:var(--white);}
+.field.full{width:100%; margin-bottom:12px; display:block;}
+.field.full label{margin-bottom:5px;}
+.full{width:100%;}
+.icon-btn{background:var(--bg-panel-2); border:1px solid var(--border); color:var(--muted); width:27px; height:27px; border-radius:6px; cursor:pointer; font-size:11.5px; display:inline-flex; align-items:center; justify-content:center; transition:all .15s;}
+.icon-btn:hover{border-color:var(--olive); color:var(--olive-light);}
+.icon-btn.danger:hover{border-color:var(--danger-light); color:var(--danger-light);}
+.action-btns{display:flex; gap:6px; align-items:center;}
+.budget-input{width:100px; text-align:right; padding:6px 8px;}
+.tab-actions{display:flex; justify-content:flex-end; margin-bottom:14px;}
+
+/* CFO NOVO / ESTILOS DE ALOCAÇÃO */
+.alloc-box{
+background:var(--bg-panel-2); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:16px;
+}
+.alloc-inputs{display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:14px;}
+.alloc-card{background:var(--bg-panel); border:1px solid var(--border); padding:12px; border-radius:8px;}
+.alloc-card h5{font-size:11px; text-transform:uppercase; color:var(--muted-2); margin-bottom:6px;}
+.alloc-card .alloc-val{font-size:16px; font-weight:800; color:var(--olive-light);}
+.alloc-card .alloc-diff{font-size:11px; margin-top:2px;}
+
+.empty{padding:30px; text-align:center; color:var(--muted-2); font-size:12.5px;}
+.badge-method{font-size:10.5px; color:var(--muted-2);}
+.badge-parcela{display:inline-block; padding:2px 7px; border-radius:6px; font-size:10.5px; font-weight:700; background:rgba(255,255,255,.08); color:var(--muted);}
+.badge-pessoa{display:inline-block; padding:2px 8px; border-radius:20px; font-size:10.5px; font-weight:600; background:var(--olive-glow); color:var(--olive-light); border:1px solid var(--olive-dark);}
+.badge-quitado{display:inline-block; padding:3px 9px; border-radius:20px; font-size:10.5px; font-weight:700; background:rgba(181,227,56,.15); color:var(--olive-light);}
+.badge-aberto{display:inline-block; padding:3px 9px; border-radius:20px; font-size:10.5px; font-weight:700; background:rgba(255,204,0,.15); color:#FFCC00;}
+@media print{ .sidebar,.topbar-controls,.filters-bar .btn{display:none;} }
+.switch-radio{display:flex; gap:6px; flex-wrap:wrap;}
+.switch-radio label{padding:8px 14px; border:1px solid var(--border); border-radius:7px; font-size:12px; cursor:pointer; background:var(--bg-panel-2); color:var(--muted); user-select:none;}
+.switch-radio input{display:none;}
+.switch-radio input:checked + label{background:var(--olive-glow); color:var(--olive-light); border-color:var(--olive-dark); font-weight:600;}
+.vei-summary{display:flex; flex-wrap:wrap; gap:24px; font-size:12.5px;}
+.vei-summary b{color:var(--white);}
+
+/* SELEÇÃO / EXCLUSÃO EM LOTE */
+.row-check{width:16px; height:16px; accent-color:var(--olive); cursor:pointer; vertical-align:middle;}
+.selection-bar{display:flex; align-items:center; gap:12px; margin-bottom:14px; background:var(--olive-glow); border:1px solid var(--olive-dark); padding:10px 14px; border-radius:10px; font-size:12.5px; flex-wrap:wrap;}
+.selection-bar .sel-count{flex:1; color:var(--olive-light); font-weight:700;}
+.summary-strip{display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:14px;}
+.summary-strip .s-chip{background:var(--bg-panel); border:1px solid var(--border); border-radius:10px; padding:10px 12px;}
+.summary-strip .s-chip .sl{font-size:9.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted-2); font-weight:700;}
+.summary-strip .s-chip .sv{font-size:15px; font-weight:800; margin-top:3px;}
+@media(max-width:900px){.summary-strip{grid-template-columns:repeat(2,1fr);}}
+
+/* AUTH / LOGIN */
+#authScreen{position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:2000; padding:20px;}
+.auth-card{width:420px; max-width:100%; background:var(--bg-panel); border:1px solid var(--olive-dark); border-radius:16px; padding:32px; box-shadow:0 0 0 1px rgba(181,227,56,.08), 0 24px 70px rgba(0,0,0,.6);}
+.auth-brand{display:flex; align-items:center; gap:12px; margin-bottom:22px; justify-content:center;}
+.auth-brand .brand-text{font-weight:700; font-size:15px; text-align:left;}
+.auth-brand .brand-text span{display:block; font-size:10.5px; color:var(--muted-2); text-transform:uppercase; letter-spacing:.08em; margin-top:2px;}
+.auth-card h2{font-size:18px; font-weight:700; text-align:center; margin-bottom:4px; color:var(--olive-light);}
+.auth-msg{min-height:18px; font-size:12px; text-align:center; margin-bottom:12px; color:var(--danger-light);}
+.auth-note{margin-top:16px; font-size:11px; color:var(--muted-2); text-align:center; line-height:1.5;}
+#btnLogout{display:none;}
+#btnLogout:hover{border-color:var(--danger-light); color:var(--danger-light);}
+</style>
+</head>
+<body>
+
+<!-- TELA DE LOGIN / CADASTRO -->
+<div id="authScreen" style="display: none;">
+<div class="auth-card">
+<div class="auth-brand">
+<div class="brand-mark">$</div>
+<div class="brand-text">Meu Financeiro<span>CFO &amp; Gestão Pessoal</span></div>
+</div>
+<h2 id="authTitle">Entrar</h2>
+<p class="auth-msg" id="authMsg"></p>
+<div class="switch-radio" style="justify-content:center; margin-bottom:16px;">
+<input type="radio" name="authMode" id="authModeLogin" value="login" checked=""><label for="authModeLogin">Entrar</label>
+<input type="radio" name="authMode" id="authModeSignup" value="signup"><label for="authModeSignup">Criar conta</label>
+</div>
+<div class="field full"><label class="field-label">E-mail</label><input type="email" id="authEmail" class="full" autocomplete="email" placeholder="voce@exemplo.com"></div>
+<div class="field full" style="margin-top:12px;"><label class="field-label">Senha</label><input type="password" id="authPass" class="full" autocomplete="current-password" placeholder="mínimo 6 caracteres"></div>
+<div class="field full" id="authPassConfirmBox" style="display:none; margin-top:12px;"><label class="field-label">Confirmar senha</label><input type="password" id="authPassConfirm" class="full" autocomplete="new-password"></div>
+<button class="btn primary full" id="authSubmit" style="margin-top:16px;">Entrar</button>
+<div class="auth-note">Seus dados são armazenados de forma segura no Supabase e acessíveis apenas com seu login e senha.</div>
+</div>
+</div>
+
+<div class="app" style="display: flex;">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+<div class="brand">
+<div class="brand-mark">$</div>
+<div class="brand-text">Meu Financeiro<span>CFO &amp; Gestão Pessoal</span></div>
+</div>
+<div class="navgroup-label">Visão Geral</div>
+<button class="navbtn active" data-tab="dashboard"><span class="ico">◆</span> Dashboard</button>
+<button class="navbtn" data-tab="transacoes"><span class="ico">≡</span> Transações</button>
+<button class="navbtn" data-tab="orcamento"><span class="ico">⊞</span> Orçado x Realizado</button>
+<button class="navbtn" data-tab="comparativo"><span class="ico">⇄</span> Comparativo de Meses</button>
+<div class="navgroup-label">Patrimônio</div>
+<button class="navbtn" data-tab="contas"><span class="ico">🏦</span> Contas Bancárias</button>
+<button class="navbtn" data-tab="cartoes"><span class="ico">▭</span> Cartões</button>
+<button class="navbtn" data-tab="investimentos"><span class="ico">↗</span> Investimentos</button>
+<button class="navbtn" data-tab="metas"><span class="ico">◎</span> Metas Financeiras</button>
+<div class="navgroup-label">Veículo</div>
+<button class="navbtn" data-tab="veiculo"><span class="ico">⊚</span> Manutenção de Carro</button>
+<div class="navgroup-label">Contábil &amp; Estratégia</div>
+<button class="navbtn" data-tab="dre"><span class="ico">Σ</span> DRE</button>
+<button class="navbtn" data-tab="balanco"><span class="ico">▤</span> Balanço Patrimonial</button>
+<div class="navgroup-label">Dados</div>
+<button class="navbtn" data-tab="dados"><span class="ico">⇅</span> Importar / Exportar</button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<div class="topbar">
+<div>
+<h1 id="pageTitle">Dashboard Gerencial</h1>
+<div class="sub" id="pageSub">Visão consolidada das suas finanças pessoais</div>
+</div>
+<div class="topbar-controls">
+<div class="field">
+<label class="field-label">Mês de referência</label>
+<div style="display:flex; align-items:center; gap:6px;">
+<button class="icon-btn" id="btnMesPrev" title="Mês anterior">◀</button>
+<select id="mesRef"><option value="2025-01">jan de 2025</option><option value="2025-02">fev de 2025</option><option value="2025-03">mar de 2025</option><option value="2025-04">abr de 2025</option><option value="2025-05">mai de 2025</option><option value="2025-06">jun de 2025</option><option value="2025-07">jul de 2025</option><option value="2025-08">ago de 2025</option><option value="2025-09">set de 2025</option><option value="2025-10">out de 2025</option><option value="2025-11">nov de 2025</option><option value="2025-12">dez de 2025</option><option value="2026-01">jan de 2026</option><option value="2026-02">fev de 2026</option><option value="2026-03">mar de 2026</option><option value="2026-04">abr de 2026</option><option value="2026-05">mai de 2026</option><option value="2026-06">jun de 2026</option><option value="2026-07">jul de 2026</option><option value="2026-08">ago de 2026</option><option value="2026-09">set de 2026</option><option value="2026-10">out de 2026</option><option value="2026-11">nov de 2026</option><option value="2026-12">dez de 2026</option></select>
+<button class="icon-btn" id="btnMesNext" title="Próximo mês">▶</button>
+</div>
+</div>
+<button class="btn danger" id="btnExcluirPorPeriodoTop">🗑 Excluir Período</button>
+<button class="btn" id="btnImportTop">⇩ Importar arquivo</button>
+<input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
+<button class="btn primary" id="btnExportTop">⇧ Exportar</button>
+<button class="btn" id="btnLogout">Sair</button>
+</div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="tab active" id="tab-dashboard">
+<div class="grid grid-4" id="kpiRow" style="margin-bottom:18px;">
+<div class="card kpi"><div class="label">Receita do mês</div><div class="value">R$&nbsp;0,00</div><div class="delta">sem mês anterior</div></div>
+<div class="card kpi"><div class="label">Custos + Despesas</div><div class="value">R$&nbsp;490,05</div><div class="delta">sem mês anterior</div></div>
+<div class="card kpi"><div class="label">Resultado do mês</div><div class="value" style="color:var(--danger-light)">-R$&nbsp;490,05</div><div class="delta">sem mês anterior</div></div>
+<div class="card kpi"><div class="label">Taxa de poupança</div><div class="value">0%</div><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div></div>
+<div class="card kpi"><div class="label">Patrimônio investido</div><div class="value">R$&nbsp;39.733,00</div><div class="delta">carteira consolidada</div></div>
+<div class="card kpi"><div class="label">Meses de Autonomia (Runway)</div><div class="value" style="color:var(--olive-light);">117.4 meses</div><div class="delta">liquidez / custo fixo</div></div>
+<div class="card kpi"><div class="label">Maior Categoria</div><div class="value" style="font-size:16px;">Lazer</div><div class="delta">custo + despesa</div></div>
+<div class="card kpi"><div class="label">Total em metas</div><div class="value">48,2%</div><div class="bar-track"><div class="bar-fill" style="width:48.15416666666666%"></div></div></div>
+</div>
+
+<!-- ALOCAÇÃO INTELIGENTE CFO (METODOLOGIA 50/30/20) -->
+<div class="card" style="margin-bottom:16px;">
+<div class="section-title">
+Distribuição Inteligente de Rendimentos (Modelo CFO)
+<span class="tag">Distribuição Sugerida vs Realizada</span>
+</div>
+
+<div class="alloc-inputs">
+<div class="field">
+<label class="field-label">% Custos Fixos &amp; Variáveis (Essenciais)</label>
+<input type="number" id="targetEssential" value="50" min="0" max="100" step="5" onchange="renderDashboard()">
+</div>
+<div class="field">
+<label class="field-label">% Desejos &amp; Estilo de Vida</label>
+<input type="number" id="targetWants" value="30" min="0" max="100" step="5" onchange="renderDashboard()">
+</div>
+<div class="field">
+<label class="field-label">% Futuro &amp; Investimentos</label>
+<input type="number" id="targetFuture" value="20" min="0" max="100" step="5" onchange="renderDashboard()">
+</div>
+</div>
+
+<div class="grid grid-3" id="allocCardsBox">
+<div class="alloc-card">
+<h5>1. Custos Essenciais (Fixos + Var) (50% Meta)</h5>
+<div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:4px;">
+<div>
+<div class="alloc-val">R$&nbsp;114,14</div>
+<div style="font-size:11px; color:var(--muted);">0% da renda</div>
+</div>
+<div style="text-align:right;">
+<div style="font-size:12px; font-weight:700;">Meta: R$&nbsp;0,00</div>
+<div class="alloc-diff neg">Excesso: R$&nbsp;114,14</div>
+</div>
+</div>
+<div class="ptrack" style="margin-top:8px;">
+<div class="pfill over" style="width:100%"></div>
+</div>
+</div>
+
+<div class="alloc-card">
+<h5>2. Desejos &amp; Estilo de Vida (30% Meta)</h5>
+<div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:4px;">
+<div>
+<div class="alloc-val">R$&nbsp;375,91</div>
+<div style="font-size:11px; color:var(--muted);">0% da renda</div>
+</div>
+<div style="text-align:right;">
+<div style="font-size:12px; font-weight:700;">Meta: R$&nbsp;0,00</div>
+<div class="alloc-diff neg">Excesso: R$&nbsp;375,91</div>
+</div>
+</div>
+<div class="ptrack" style="margin-top:8px;">
+<div class="pfill over" style="width:100%"></div>
+</div>
+</div>
+
+<div class="alloc-card">
+<h5>3. Futuro &amp; Investimentos (20% Meta)</h5>
+<div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:4px;">
+<div>
+<div class="alloc-val">R$&nbsp;0,00</div>
+<div style="font-size:11px; color:var(--muted);">0% da renda</div>
+</div>
+<div style="text-align:right;">
+<div style="font-size:12px; font-weight:700;">Meta: R$&nbsp;0,00</div>
+<div class="alloc-diff pos">Disp: R$&nbsp;0,00</div>
+</div>
+</div>
+<div class="ptrack" style="margin-top:8px;">
+<div class="pfill " style="width:0%"></div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="grid grid-2" style="margin-bottom:16px;">
+<div class="card">
+<div class="section-title">Receitas x Custos x Despesas <span class="tag">últimos meses</span></div>
+<div class="chart-wrap"><canvas id="chartTendencia" width="622" height="260" style="display: block; box-sizing: border-box; height: 260px; width: 622px;"></canvas></div>
+</div>
+<div class="card">
+<div class="section-title">Distribuição de Gastos por Categoria <span class="tag" id="tagMesGasto">jul de 2026</span></div>
+<div class="chart-wrap"><canvas id="chartCategoria" width="622" height="260" style="display: block; box-sizing: border-box; height: 260px; width: 622px;"></canvas></div>
+</div>
+</div>
+
+<div class="grid grid-2" style="margin-bottom:16px;">
+<div class="card">
+<div class="section-title">Orçado x Realizado <span class="tag">top categorias do mês</span></div>
+<div class="chart-wrap"><canvas id="chartOrcadoMini" width="622" height="260" style="display: block; box-sizing: border-box; height: 260px; width: 622px;"></canvas></div>
+</div>
+<div class="card">
+<div class="section-title">Evolução do Patrimônio Investido</div>
+<div class="chart-wrap"><canvas id="chartPatrimonioMini" width="622" height="260" style="display: block; box-sizing: border-box; height: 260px; width: 622px;"></canvas></div>
+</div>
+</div>
+
+<div class="grid" style="grid-template-columns:1.3fr 1fr; gap:16px;">
+<div class="card">
+<div class="section-title">Insights Financeiros &amp; Diagnóstico CFO</div>
+<div id="insightsBox"><div class="insight bad"><div class="dot"></div><div><b>Déficit Operacional:</b> Gastos superaram receitas em R$&nbsp;490,05. Risco de erosão patrimonial.</div></div></div>
+</div>
+<div class="card">
+<div class="section-title">Progresso das Metas</div>
+<div id="miniGoals"><div class="progress-row"><div class="prow-top"><span>Reserva de Emergência</span><b>73,3%</b></div><div class="ptrack"><div class="pfill" style="width:73.33333333333333%"></div></div></div><div class="progress-row"><div class="prow-top"><span>Viagem Europa</span><b>41,3%</b></div><div class="ptrack"><div class="pfill" style="width:41.333333333333336%"></div></div></div><div class="progress-row"><div class="prow-top"><span>Entrada Apartamento</span><b>38,8%</b></div><div class="ptrack"><div class="pfill" style="width:38.75%"></div></div></div><div class="progress-row"><div class="prow-top"><span>Troca de Carro</span><b>39,2%</b></div><div class="ptrack"><div class="pfill" style="width:39.2%"></div></div></div></div>
+</div>
+</div>
+</div>
+
+<!-- TRANSAÇÕES -->
+<div class="tab" id="tab-transacoes">
+<div class="filters-bar">
+<div class="field"><label class="field-label">Tipo</label>
+<select id="fTipo"><option value="todos">Todos</option><option value="receita">Receitas</option><option value="custo">Custos</option><option value="despesa">Despesas</option></select>
+</div>
+<div class="field"><label class="field-label">Categoria</label><select id="fCategoria"><option value="todos">Todas</option><option value="Salário">Salário</option><option value="Renda Extra">Renda Extra</option><option value="Investimentos">Investimentos</option><option value="Outras Receitas">Outras Receitas</option><option value="Moradia">Moradia</option><option value="Alimentação">Alimentação</option><option value="Transporte">Transporte</option><option value="Saúde">Saúde</option><option value="Educação">Educação</option><option value="Lazer">Lazer</option><option value="Compras">Compras</option><option value="Assinaturas">Assinaturas</option><option value="Cuidados Pessoais">Cuidados Pessoais</option><option value="Outros">Outros</option></select></div>
+<div class="field"><label class="field-label">Subcategoria</label><select id="fSubcategoria"><option value="todos">Todas</option><option value="Salário CLT">Salário CLT</option><option value="13º Salário">13º Salário</option><option value="Freelance">Freelance</option><option value="Comissões">Comissões</option><option value="Dividendos">Dividendos</option><option value="Juros">Juros</option><option value="JSCP">JSCP</option><option value="Reembolsos">Reembolsos</option><option value="Vendas">Vendas</option><option value="Aluguel">Aluguel</option><option value="Condomínio">Condomínio</option><option value="IPTU">IPTU</option><option value="Energia">Energia</option><option value="Água">Água</option><option value="Internet">Internet</option><option value="Mercado">Mercado</option><option value="Feira">Feira</option><option value="Vale Alimentação">Vale Alimentação</option><option value="Combustível">Combustível</option><option value="Manutenção">Manutenção</option><option value="Seguro">Seguro</option><option value="IPVA">IPVA</option><option value="Licenciamento">Licenciamento</option><option value="Plano de Saúde">Plano de Saúde</option><option value="Farmácia">Farmácia</option><option value="Consultas/Exames">Consultas/Exames</option><option value="Dentista">Dentista</option><option value="Cursos">Cursos</option><option value="Mensalidade">Mensalidade</option><option value="Restaurantes">Restaurantes</option><option value="Cinema/Shows">Cinema/Shows</option><option value="Viagens">Viagens</option><option value="Presentes">Presentes</option><option value="Vestuário">Vestuário</option><option value="Eletrônicos">Eletrônicos</option><option value="Eletroeletrônicos">Eletroeletrônicos</option><option value="Streaming">Streaming</option><option value="Aplicativos">Aplicativos</option><option value="Academia">Academia</option><option value="Salão/Barbearia">Salão/Barbearia</option><option value="Doações">Doações</option><option value="Diversos">Diversos</option><option value="Fatura Cartão">Fatura Cartão</option></select></div>
+<div class="field"><label class="field-label" id="labelFMes">Mês</label><select id="fMes"><option value="todos">Todos os meses</option><option value="2025-01">jan de 2025</option><option value="2025-02">fev de 2025</option><option value="2025-03">mar de 2025</option><option value="2025-04">abr de 2025</option><option value="2025-05">mai de 2025</option><option value="2025-06">jun de 2025</option><option value="2025-07">jul de 2025</option><option value="2025-08">ago de 2025</option><option value="2025-09">set de 2025</option><option value="2025-10">out de 2025</option><option value="2025-11">nov de 2025</option><option value="2025-12">dez de 2025</option><option value="2026-01">jan de 2026</option><option value="2026-02">fev de 2026</option><option value="2026-03">mar de 2026</option><option value="2026-04">abr de 2026</option><option value="2026-05">mai de 2026</option><option value="2026-06">jun de 2026</option><option value="2026-07">jul de 2026</option><option value="2026-08">ago de 2026</option><option value="2026-09">set de 2026</option><option value="2026-10">out de 2026</option><option value="2026-11">nov de 2026</option><option value="2026-12">dez de 2026</option></select></div>
+<div class="field" id="boxFMesFim" style="display:none;"><label class="field-label">Até o mês</label><select id="fMesFim"><option value="2025-01">jan de 2025</option><option value="2025-02">fev de 2025</option><option value="2025-03">mar de 2025</option><option value="2025-04">abr de 2025</option><option value="2025-05">mai de 2025</option><option value="2025-06">jun de 2025</option><option value="2025-07">jul de 2025</option><option value="2025-08">ago de 2025</option><option value="2025-09">set de 2025</option><option value="2025-10">out de 2025</option><option value="2025-11">nov de 2025</option><option value="2025-12">dez de 2025</option><option value="2026-01">jan de 2026</option><option value="2026-02">fev de 2026</option><option value="2026-03">mar de 2026</option><option value="2026-04">abr de 2026</option><option value="2026-05">mai de 2026</option><option value="2026-06">jun de 2026</option><option value="2026-07">jul de 2026</option><option value="2026-08">ago de 2026</option><option value="2026-09">set de 2026</option><option value="2026-10">out de 2026</option><option value="2026-11">nov de 2026</option><option value="2026-12">dez de 2026</option></select></div>
+<div class="field"><label class="field-label">Período</label><select id="fModoPeriodo"><option value="single">Mês único</option><option value="range">Intervalo de meses</option></select></div>
+<div class="field"><label class="field-label">Pessoa / Parente</label><select id="fPessoa"><option value="todos">Todos</option><option value="Alysson">Alysson</option><option value="Sil">Sil</option></select></div>
+<div class="field"><label class="field-label">Buscar descrição</label><input type="text" id="fBusca" placeholder="ex: mercado, aluguel..."></div>
+<button class="btn small" id="btnLimparFiltros">Limpar filtros</button>
+<button class="btn primary" id="btnNovaTx" style="margin-left:auto;">+ Novo Lançamento</button>
+</div>
+
+<!-- BARRA DE EXCLUSÃO DE LANÇAMENTOS POR PERÍODO -->
+<div class="delete-bar">
+<div class="field">
+<label class="field-label">Modo de Exclusão</label>
+<select id="delMode">
+<option value="single">Período Único (Mês)</option>
+<option value="range">Intervalo de Períodos</option>
+</select>
+</div>
+<div class="field" id="boxDelMesInicio">
+<label class="field-label" id="labelDelMesInicio">Mês para Excluir</label>
+<select id="delMesInicio"><option value="2025-01">jan de 2025</option><option value="2025-02">fev de 2025</option><option value="2025-03">mar de 2025</option><option value="2025-04">abr de 2025</option><option value="2025-05">mai de 2025</option><option value="2025-06">jun de 2025</option><option value="2025-07">jul de 2025</option><option value="2025-08">ago de 2025</option><option value="2025-09">set de 2025</option><option value="2025-10">out de 2025</option><option value="2025-11">nov de 2025</option><option value="2025-12">dez de 2025</option><option value="2026-01">jan de 2026</option><option value="2026-02">fev de 2026</option><option value="2026-03">mar de 2026</option><option value="2026-04">abr de 2026</option><option value="2026-05">mai de 2026</option><option value="2026-06">jun de 2026</option><option value="2026-07">jul de 2026</option><option value="2026-08">ago de 2026</option><option value="2026-09">set de 2026</option><option value="2026-10">out de 2026</option><option value="2026-11">nov de 2026</option><option value="2026-12">dez de 2026</option></select>
+</div>
+<div class="field" id="boxDelMesFim" style="display:none;">
+<label class="field-label">Mês Final (Até)</label>
+<select id="delMesFim"><option value="2025-01">jan de 2025</option><option value="2025-02">fev de 2025</option><option value="2025-03">mar de 2025</option><option value="2025-04">abr de 2025</option><option value="2025-05">mai de 2025</option><option value="2025-06">jun de 2025</option><option value="2025-07">jul de 2025</option><option value="2025-08">ago de 2025</option><option value="2025-09">set de 2025</option><option value="2025-10">out de 2025</option><option value="2025-11">nov de 2025</option><option value="2025-12">dez de 2025</option><option value="2026-01">jan de 2026</option><option value="2026-02">fev de 2026</option><option value="2026-03">mar de 2026</option><option value="2026-04">abr de 2026</option><option value="2026-05">mai de 2026</option><option value="2026-06">jun de 2026</option><option value="2026-07">jul de 2026</option><option value="2026-08">ago de 2026</option><option value="2026-09">set de 2026</option><option value="2026-10">out de 2026</option><option value="2026-11">nov de 2026</option><option value="2026-12">dez de 2026</option></select>
+</div>
+<button class="btn danger" id="btnExcluirLote">🗑 Excluir Lançamentos em Lote</button>
+</div>
+
+<div class="summary-strip" id="txSummary"></div>
+<div class="card">
+<div class="section-title">Lançamentos <span class="tag" id="totalLancamentos"></span>
+<span class="tag" style="display:flex; gap:8px;">
+<button class="btn small danger" id="btnExcluirSelecionadosTx" style="display:none;">🗑 Excluir selecionados (<span id="selCountTx">0</span>)</button>
+<button class="btn small" id="btnLimparSelecaoTx" style="display:none;">Limpar seleção</button>
+</span>
+</div>
+<div class="table-scroll">
+<table>
+<thead><tr><th style="width:28px;"><input type="checkbox" id="selAllTx" class="row-check" title="Selecionar todos da listagem"></th><th>Data</th><th>Tipo</th><th>Categoria</th><th>Subcategoria</th><th>Descrição</th><th>Parcela</th><th>Pessoa</th><th>Forma / Conta / Cartão</th><th class="num">Valor</th><th>Ações</th></tr></thead>
+<tbody id="tblTransacoes"></tbody>
+<tfoot><tr><td></td><td colspan="8">Total do filtro</td><td class="num" id="totalFiltro">R$ 0,00</td><td></td></tr></tfoot>
+</table>
+</div>
+</div>
+
+<div class="card" id="cardResumoPessoa" style="margin-top:16px; display:none;">
+<div class="section-title">Resumo por Pessoa / Parente <span class="tag">valores dos lançamentos filtrados que possuem pessoa vinculada</span></div>
+<div class="table-scroll">
+<table>
+<thead><tr><th>Pessoa</th><th>Qtd. Lançamentos</th><th class="num">Total</th></tr></thead>
+<tbody id="tblResumoPessoa"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<!-- ORÇADO X REALIZADO -->
+<div class="tab" id="tab-orcamento">
+<div class="card">
+<div class="section-title">Orçado x Realizado — <span id="orcMesLabel"></span></div>
+<div class="table-scroll">
+<table>
+<thead><tr><th>Tipo</th><th>Categoria</th><th class="num">Orçado</th><th class="num">Realizado</th><th class="num">Diferença</th><th>% Realizado</th></tr></thead>
+<tbody id="tblOrcamento"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<!-- COMPARATIVO -->
+<div class="tab" id="tab-comparativo">
+<div class="filters-bar">
+<div class="field"><label class="field-label">Mês A</label><select id="compMesA"><option value="2025-01">jan de 2025</option><option value="2025-02">fev de 2025</option><option value="2025-03">mar de 2025</option><option value="2025-04">abr de 2025</option><option value="2025-05">mai de 2025</option><option value="2025-06">jun de 2025</option><option value="2025-07">jul de 2025</option><option value="2025-08">ago de 2025</option><option value="2025-09">set de 2025</option><option value="2025-10">out de 2025</option><option value="2025-11">nov de 2025</option><option value="2025-12">dez de 2025</option><option value="2026-01">jan de 2026</option><option value="2026-02">fev de 2026</option><option value="2026-03">mar de 2026</option><option value="2026-04">abr de 2026</option><option value="2026-05">mai de 2026</option><option value="2026-06">jun de 2026</option><option value="2026-07">jul de 2026</option><option value="2026-08">ago de 2026</option><option value="2026-09">set de 2026</option><option value="2026-10">out de 2026</option><option value="2026-11">nov de 2026</option><option value="2026-12">dez de 2026</option></select></div>
+<div class="field"><label class="field-label">Mês B</label><select id="compMesB"><option value="2025-01">jan de 2025</option><option value="2025-02">fev de 2025</option><option value="2025-03">mar de 2025</option><option value="2025-04">abr de 2025</option><option value="2025-05">mai de 2025</option><option value="2025-06">jun de 2025</option><option value="2025-07">jul de 2025</option><option value="2025-08">ago de 2025</option><option value="2025-09">set de 2025</option><option value="2025-10">out de 2025</option><option value="2025-11">nov de 2025</option><option value="2025-12">dez de 2025</option><option value="2026-01">jan de 2026</option><option value="2026-02">fev de 2026</option><option value="2026-03">mar de 2026</option><option value="2026-04">abr de 2026</option><option value="2026-05">mai de 2026</option><option value="2026-06">jun de 2026</option><option value="2026-07">jul de 2026</option><option value="2026-08">ago de 2026</option><option value="2026-09">set de 2026</option><option value="2026-10">out de 2026</option><option value="2026-11">nov de 2026</option><option value="2026-12">dez de 2026</option></select></div>
+</div>
+<div class="grid grid-4" id="compKpis" style="margin-bottom:16px;"></div>
+<div class="card" style="margin-bottom:16px;">
+<div class="section-title">Comparativo por Categoria</div>
+<div class="chart-wrap tall"><canvas id="chartComparativo"></canvas></div>
+</div>
+<div class="card">
+<div class="section-title">Detalhamento</div>
+<div class="table-scroll">
+<table>
+<thead><tr><th>Tipo</th><th>Categoria</th><th class="num" id="thMesA">Mês A</th><th class="num" id="thMesB">Mês B</th><th class="num">Variação</th><th class="num">Variação %</th></tr></thead>
+<tbody id="tblComparativo"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<!-- CONTAS BANCÁRIAS -->
+<div class="tab" id="tab-contas">
+<div class="filters-bar">
+<div class="field"><label class="field-label">Período</label><select id="cModoPeriodo"><option value="single">Mês único</option><option value="range">Intervalo de meses</option></select></div>
+<div class="field"><label class="field-label" id="labelCMes">Mês</label><select id="cMes"><option value="todos">Todos os meses</option><option value="2025-01">jan de 2025</option><option value="2025-02">fev de 2025</option><option value="2025-03">mar de 2025</option><option value="2025-04">abr de 2025</option><option value="2025-05">mai de 2025</option><option value="2025-06">jun de 2025</option><option value="2025-07">jul de 2025</option><option value="2025-08">ago de 2025</option><option value="2025-09">set de 2025</option><option value="2025-10">out de 2025</option><option value="2025-11">nov de 2025</option><option value="2025-12">dez de 2025</option><option value="2026-01">jan de 2026</option><option value="2026-02">fev de 2026</option><option value="2026-03">mar de 2026</option><option value="2026-04">abr de 2026</option><option value="2026-05">mai de 2026</option><option value="2026-06">jun de 2026</option><option value="2026-07">jul de 2026</option><option value="2026-08">ago de 2026</option><option value="2026-09">set de 2026</option><option value="2026-10">out de 2026</option><option value="2026-11">nov de 2026</option><option value="2026-12">dez de 2026</option></select></div>
+<div class="field" id="boxCMesFim" style="display:none;"><label class="field-label">Até o mês</label><select id="cMesFim"><option value="2025-01">jan de 2025</option><option value="2025-02">fev de 2025</option><option value="2025-03">mar de 2025</option><option value="2025-04">abr de 2025</option><option value="2025-05">mai de 2025</option><option value="2025-06">jun de 2025</option><option value="2025-07">jul de 2025</option><option value="2025-08">ago de 2025</option><option value="2025-09">set de 2025</option><option value="2025-10">out de 2025</option><option value="2025-11">nov de 2025</option><option value="2025-12">dez de 2025</option><option value="2026-01">jan de 2026</option><option value="2026-02">fev de 2026</option><option value="2026-03">mar de 2026</option><option value="2026-04">abr de 2026</option><option value="2026-05">mai de 2026</option><option value="2026-06">jun de 2026</option><option value="2026-07">jul de 2026</option><option value="2026-08">ago de 2026</option><option value="2026-09">set de 2026</option><option value="2026-10">out de 2026</option><option value="2026-11">nov de 2026</option><option value="2026-12">dez de 2026</option></select></div>
+</div>
+<div class="tab-actions">
+<button class="btn danger" id="btnExcluirSelecionadosContas" style="display:none;">🗑 Excluir selecionados (<span id="selCountContas">0</span>)</button>
+<button class="btn primary" id="btnNovaConta">+ Nova Conta Bancária</button>
+</div>
+<div id="contasBox" class="grid grid-2"></div>
+</div>
+
+<!-- CARTÕES -->
+<div class="tab" id="tab-cartoes">
+<div class="filters-bar">
+<div class="field"><label class="field-label">Período</label><select id="kModoPeriodo"><option value="single">Mês único</option><option value="range">Intervalo de meses</option></select></div>
+<div class="field"><label class="field-label" id="labelKMes">Mês</label><select id="kMes"><option value="todos">Todos os meses</option><option value="2025-01">jan de 2025</option><option value="2025-02">fev de 2025</option><option value="2025-03">mar de 2025</option><option value="2025-04">abr de 2025</option><option value="2025-05">mai de 2025</option><option value="2025-06">jun de 2025</option><option value="2025-07">jul de 2025</option><option value="2025-08">ago de 2025</option><option value="2025-09">set de 2025</option><option value="2025-10">out de 2025</option><option value="2025-11">nov de 2025</option><option value="2025-12">dez de 2025</option><option value="2026-01">jan de 2026</option><option value="2026-02">fev de 2026</option><option value="2026-03">mar de 2026</option><option value="2026-04">abr de 2026</option><option value="2026-05">mai de 2026</option><option value="2026-06">jun de 2026</option><option value="2026-07">jul de 2026</option><option value="2026-08">ago de 2026</option><option value="2026-09">set de 2026</option><option value="2026-10">out de 2026</option><option value="2026-11">nov de 2026</option><option value="2026-12">dez de 2026</option></select></div>
+<div class="field" id="boxKMesFim" style="display:none;"><label class="field-label">Até o mês</label><select id="kMesFim"><option value="2025-01">jan de 2025</option><option value="2025-02">fev de 2025</option><option value="2025-03">mar de 2025</option><option value="2025-04">abr de 2025</option><option value="2025-05">mai de 2025</option><option value="2025-06">jun de 2025</option><option value="2025-07">jul de 2025</option><option value="2025-08">ago de 2025</option><option value="2025-09">set de 2025</option><option value="2025-10">out de 2025</option><option value="2025-11">nov de 2025</option><option value="2025-12">dez de 2025</option><option value="2026-01">jan de 2026</option><option value="2026-02">fev de 2026</option><option value="2026-03">mar de 2026</option><option value="2026-04">abr de 2026</option><option value="2026-05">mai de 2026</option><option value="2026-06">jun de 2026</option><option value="2026-07">jul de 2026</option><option value="2026-08">ago de 2026</option><option value="2026-09">set de 2026</option><option value="2026-10">out de 2026</option><option value="2026-11">nov de 2026</option><option value="2026-12">dez de 2026</option></select></div>
+</div>
+<div class="tab-actions">
+<button class="btn danger" id="btnExcluirSelecionadosCartoes" style="display:none;">🗑 Excluir selecionados (<span id="selCountCartoes">0</span>)</button>
+<button class="btn primary" id="btnNovoCartao">+ Novo Cartão</button>
+</div>
+<div id="cardsBox" class="grid grid-2"></div>
+</div>
+
+<!-- INVESTIMENTOS -->
+<div class="tab" id="tab-investimentos">
+<div class="grid grid-4" id="investKpis" style="margin-bottom:16px;"></div>
+<div class="grid grid-2" style="margin-bottom:16px;">
+<div class="card">
+<div class="section-title">Evolução do Patrimônio Investido</div>
+<div class="chart-wrap"><canvas id="chartInvestEvo"></canvas></div>
+</div>
+<div class="card">
+<div class="section-title">Alocação por Tipo</div>
+<div class="chart-wrap"><canvas id="chartInvestAlloc"></canvas></div>
+</div>
+</div>
+<div class="card">
+<div class="section-title">Carteira de Investimentos <button class="btn small primary" id="btnNovoInvest">+ Adicionar Ativo</button></div>
+<div class="table-scroll">
+<table>
+<thead><tr><th>Ativo</th><th>Tipo</th><th class="num">Valor Investido</th><th class="num">Valor Atual</th><th class="num">Rentabilidade</th><th>Ações</th></tr></thead>
+<tbody id="tblInvest"></tbody>
+<tfoot><tr><td colspan="2">Total</td><td class="num" id="totInvestido">-</td><td class="num" id="totAtual">-</td><td class="num" id="totRent">-</td><td></td></tr></tfoot>
+</table>
+</div>
+</div>
+</div>
+
+<!-- METAS -->
+<div class="tab" id="tab-metas">
+<div class="tab-actions"><button class="btn primary" id="btnNovaMeta">+ Nova Meta</button></div>
+<div class="grid grid-2" id="goalsBox"></div>
+</div>
+
+<!-- DRE -->
+<div class="tab" id="tab-dre">
+<div class="filters-bar">
+<div class="field"><label class="field-label">Período</label>
+<select id="drePeriodo"><option value="mes">Mês de referência</option><option value="ano">Ano do mês de referência</option><option value="tudo">Todo o período</option></select>
+</div>
+</div>
+<div class="card">
+<div class="section-title">Demonstração do Resultado (DRE) <span class="tag" id="dreLabel"></span></div>
+<table class="dre-table">
+<tbody id="tblDre"></tbody>
+</table>
+</div>
+</div>
+
+<!-- BALANÇO -->
+<div class="tab" id="tab-balanco">
+<div class="card">
+<div class="section-title">Balanço Patrimonial <span class="tag" id="bpLabel"></span></div>
+<div class="grid grid-2">
+<div class="bp-col">
+<h3>Ativo</h3>
+<div id="bpAtivo"></div>
+</div>
+<div class="bp-col">
+<h3>Passivo e Patrimônio Líquido</h3>
+<div id="bpPassivo"></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- MANUTENÇÃO DE CARRO -->
+<div class="tab" id="tab-veiculo">
+<div class="grid grid-4" id="veiKpis" style="margin-bottom:18px;"></div>
+
+<div class="card" style="margin-bottom:16px;">
+<div class="section-title">Veículo <span class="tag">configuração</span>
+<button class="btn small" onclick="openVehicleForm()">✎ Editar</button>
+</div>
+<div id="veiInfo" style="color:var(--muted);"></div>
+</div>
+
+<div class="card" style="margin-bottom:16px;">
+<div class="section-title">Alertas de Manutenção <span class="tag">óleo, pneus, filtros, freios...</span>
+<button class="btn primary small" onclick="openAlertForm()">+ Novo Alerta</button>
+</div>
+<div id="veiAlertas"></div>
+</div>
+
+<div class="grid grid-2" style="margin-bottom:16px;">
+<div class="card">
+<div class="section-title">Consumo por Abastecimento <span class="tag" id="tagConsumoStats"></span></div>
+<div class="chart-wrap"><canvas id="chartConsumo"></canvas></div>
+</div>
+<div class="card">
+<div class="section-title">Gastos de Manutenção <span class="tag">por item / peça</span></div>
+<div class="chart-wrap"><canvas id="chartMaint"></canvas></div>
+</div>
+</div>
+
+<div class="card" style="margin-bottom:16px;">
+<div class="section-title">Abastecimentos <span class="tag" id="veiAbasTag"></span>
+<button class="btn primary small" onclick="openAbastecimentoForm()">+ Novo Abastecimento</button>
+</div>
+<div class="table-scroll">
+<table>
+<thead><tr><th>Data</th><th>Posto</th><th class="num">Km Início</th><th class="num">Km Fim</th><th class="num">Distância</th><th class="num">Litros</th><th class="num">Valor</th><th class="num">Consumo</th><th class="num">R$/L</th><th>Ações</th></tr></thead>
+<tbody id="tblAbastecimentos"></tbody>
+<tfoot><tr><td colspan="3">Totais</td><td></td><td class="num" id="totDist">-</td><td class="num" id="totLitros">-</td><td class="num" id="totValorAbas">-</td><td class="num" id="totConsumo">-</td><td></td><td></td></tr></tfoot>
+</table>
+</div>
+</div>
+
+<div class="card">
+<div class="section-title">Histórico de Manutenções <span class="tag" id="veiMaintTag"></span>
+<button class="btn primary small" onclick="openManutencaoForm()">+ Registrar Manutenção</button>
+</div>
+<div class="table-scroll">
+<table>
+<thead><tr><th>Data</th><th>Descrição / Peça</th><th class="num">Km</th><th class="num">Custo</th><th>Origem</th><th>Ações</th></tr></thead>
+<tbody id="tblManutencoes"></tbody>
+<tfoot><tr><td colspan="2">Total investido em manutenção</td><td></td><td class="num" id="totMaint">-</td><td></td><td></td></tr></tfoot>
+</table>
+</div>
+</div>
+</div>
+
+<!-- DADOS -->
+<div class="tab" id="tab-dados">
+<div class="grid grid-2">
+<div class="card">
+<div class="section-title">Importar Lançamentos</div>
+<p style="color:var(--muted); font-size:12.5px; margin-bottom:14px;">Envie um arquivo <b>.xlsx</b> ou <b>.csv</b> com as colunas: <br><i>Data, Tipo, Categoria, Subcategoria, Descrição, Valor, FormaPagamento, Cartao, Status</i>.<br>Tipo aceita: receita, custo ou despesa. Datas podem estar em DD/MM/AAAA ou AAAA-MM-DD.</p>
+<button class="btn primary" id="btnImportBottom">⇩ Selecionar arquivo</button>
+<div id="importStatus" style="margin-top:12px; font-size:12px; color:var(--olive-light);"></div>
+</div>
+<div class="card">
+<div class="section-title">Exportar Dados</div>
+<p style="color:var(--muted); font-size:12.5px; margin-bottom:14px;">Baixe todos os seus dados no formato desejado.</p>
+<div style="display:flex; flex-direction:column; gap:10px;">
+<button class="btn" id="expExcel">📊 Exportar Excel (.xlsx) — todas as planilhas</button>
+<button class="btn" id="expCsv">📄 Exportar CSV — transações</button>
+<button class="btn" id="expJson">🗂 Exportar JSON — base completa</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="footer-note">Painel de Controle Financeiro Pessoal · CFO Edition · Todos os valores em R$ (BRL)</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+<div class="modal-box">
+<div class="modal-head"><h3 id="modalTitle">Título</h3><button class="modal-close" id="modalClose">×</button></div>
+<div id="modalBody"></div>
+</div>
+</div>
+
+<script>
+/* ============================= SUPABASE · CONFIGURAÇÃO ============================= */
+// Preencha abaixo com os dados do seu projeto Supabase.
+// Onde encontrar: Supabase Dashboard > Project Settings > API.
+// A anon key é pública por design (a segurança é garantida pelas políticas RLS no banco).
+// NUNCA coloque a service_role key neste arquivo.
+const SUPABASE_URL = 'https://spipkkvoikvdkjzrizxz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwaXBra3ZvaWt2ZGtqenJpenh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNzQ5NTMsImV4cCI6MjEwMTk1MDk1M30.VlWKVKi6S27bfq1FgGzOZqBPlKX-s1Li8KewmSV5_Ns';
+const SEED_DEMO_NEW_USER = true; // cria dados de demonstração para contas novas
+
+/* ============================= DADOS ============================= */
+const CATEGORIES = {
+receita: {'Salário':['Salário CLT','13º Salário'],'Renda Extra':['Freelance','Comissões'],'Investimentos':['Dividendos','Juros','JSCP'],'Outras Receitas':['Reembolsos','Vendas']},
+custo: {'Moradia':['Aluguel','Condomínio','IPTU','Energia','Água','Internet'],'Alimentação':['Mercado','Feira','Vale Alimentação'],'Transporte':['Combustível','Manutenção','Seguro','IPVA','Licenciamento'],'Saúde':['Plano de Saúde','Farmácia','Consultas/Exames','Dentista'],'Educação':['Cursos','Mensalidade']},
+despesa: {'Lazer':['Restaurantes','Cinema/Shows','Viagens','Presentes'],'Compras':['Vestuário','Eletrônicos','Eletroeletrônicos'],'Assinaturas':['Streaming','Aplicativos','Academia'],'Cuidados Pessoais':['Salão/Barbearia'],'Outros':['Doações','Diversos','Fatura Cartão']}
+};
+let BUDGETS = {'Salário':9000,'Renda Extra':1000,'Investimentos':200,'Outras Receitas':100,'Moradia':2600,'Alimentação':1300,'Transporte':800,'Saúde':800,'Educação':300,'Lazer':600,'Compras':400,'Assinaturas':250,'Cuidados Pessoais':200,'Outros':150};
+
+let ACCOUNTS = [
+{id:1, name:'Itaú Conta Corrente', initialBalance: 5000},
+{id:2, name:'Nubank Conta', initialBalance: 2500},
+{id:3, name:'Inter Conta', initialBalance: 1000}
+];
+
+let CARDS = [
+{name:'Nubank Ultravioleta', type:'Crédito', limit:8000, monthlyLimit:2500, closingDay:25, dueDay:5, isBeneficio:false, initialBalance:0},
+{name:'Itaú Débito', type:'Débito', limit:null, monthlyLimit:null, closingDay:null, dueDay:null, isBeneficio:false, initialBalance:0},
+{name:'Inter Crédito', type:'Crédito', limit:5000, monthlyLimit:1500, closingDay:10, dueDay:17, isBeneficio:false, initialBalance:0},
+{name:'Ticket Alimentação (Benefício)', type:'Alimentação / Benefício', limit:null, monthlyLimit:800, closingDay:null, dueDay:null, isBeneficio:true, initialBalance:1200}
+];
+
+let GOALS = [
+{nome:'Reserva de Emergência', alvo:30000, atual:22000, prazo:'2025-12', categoria:'Segurança'},
+{nome:'Viagem Europa', alvo:15000, atual:6200, prazo:'2026-07', categoria:'Lazer'},
+{nome:'Entrada Apartamento', alvo:80000, atual:31000, prazo:'2027-06', categoria:'Patrimônio'},
+{nome:'Troca de Carro', alvo:25000, atual:9800, prazo:'2026-12', categoria:'Patrimônio'}
+];
+
+function mulberry32(seed){return function(){seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296;};}
+let rng = mulberry32(42);
+function rand(a,b){return a+rng()*(b-a);}
+function randInt(a,b){return Math.floor(rand(a,b+1));}
+function chance(p){return rng()<p;}
+function genMonths(sy,sm,ey,em){let out=[],y=sy,m=sm; while(y<ey||(y===ey&&m<=em)){out.push(y+'-'+String(m).padStart(2,'0')); m++; if(m>12){m=1;y++;}} return out;}
+const MONTHS = genMonths(2025,1,2026,12);
+
+let transactions = [];
+let idCounter = 1;
+function addTx(date,type,category,subcategory,description,amount,method,card,account,isBillPayment=false,extra={}){
+transactions.push({
+id:idCounter++, date, month:date.slice(0,7), type, category, subcategory, description,
+amount:Math.round(amount*100)/100, method, card:card||'', account:account||'', status:'realizado', isBillPayment:!!isBillPayment,
+pessoa: extra.pessoa || '',
+parcelaAtual: extra.parcelaAtual || null,
+parcelaTotal: extra.parcelaTotal || null,
+grupoParcelamento: extra.grupoParcelamento || null
+});
+}
+
+// Registro de status das faturas de cartão (aberta / quitada) por cartão + mês
+let cardInvoices = {};
+function invoiceKey(cardName, month){ return cardName+'|'+month; }
+function getInvoiceStatus(cardName, month){
+return cardInvoices[invoiceKey(cardName,month)] || {status:'aberto', paidDate:null};
+}
+function setInvoiceStatus(cardName, month, status, paidDate){
+cardInvoices[invoiceKey(cardName,month)] = {status, paidDate: paidDate||null};
+}
+function listaPessoas(){
+return [...new Set(transactions.map(t=>t.pessoa).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+}
+
+let investmentEvolution = [];
+let totalInvestido = 0;
+let INVESTMENTS = [];
+
+function seedDemoData(){
+transactions = [];
+idCounter = 1;
+cardInvoices = {};
+MONTHS.slice(0, 19).forEach((month,i)=>{
+const m = month.split('-')[1];
+const salarioBase = 8500 + Math.floor(i/6)*400;
+addTx(month+'-05','receita','Salário','Salário CLT','Salário mensal',salarioBase,'Transferência','','Itaú Conta Corrente');
+addTx(month+'-01','receita','Alimentação','Vale Alimentação','Crédito Vale Alimentação',800,'Cartão Benefício','Ticket Alimentação (Benefício)','');
+if(m==='12') addTx(month+'-20','receita','Salário','13º Salário','13º salário',salarioBase,'Transferência','','Itaú Conta Corrente');
+if(chance(0.35)) addTx(month+'-'+String(randInt(10,20)).padStart(2,'0'),'receita','Renda Extra','Freelance','Projeto freelance',rand(500,2500),'Pix','','Nubank Conta');
+addTx(month+'-15','receita','Investimentos','Dividendos','Dividendos e JCP',rand(80,150)+i*8,'Transferência','','Inter Conta');
+
+addTx(month+'-10','custo','Moradia','Aluguel','Aluguel do apartamento',1800,'Débito','Itaú Débito','Itaú Conta Corrente');
+addTx(month+'-10','custo','Moradia','Condomínio','Condomínio',450,'Débito','Itaú Débito','Itaú Conta Corrente');
+if(m==='01') addTx(month+'-15','custo','Moradia','IPTU','IPTU parcela única',620,'Débito','Itaú Débito','Itaú Conta Corrente');
+addTx(month+'-08','custo','Moradia','Energia','Conta de luz',rand(150,260),'Débito','Itaú Débito','Itaú Conta Corrente');
+addTx(month+'-08','custo','Moradia','Água','Conta de água',rand(80,130),'Débito','Itaú Débito','Itaú Conta Corrente');
+addTx(month+'-05','custo','Moradia','Internet','Internet fibra',119.9,'Débito','Itaú Débito','Itaú Conta Corrente');
+addTx(month+'-12','custo','Alimentação','Mercado','Compras do mês (VA)',rand(500,750),'Cartão Benefício','Ticket Alimentação (Benefício)','');
+addTx(month+'-26','custo','Alimentação','Mercado','Reposição de mercado',rand(300,500),'Crédito','Nubank Ultravioleta','');
+addTx(month+'-19','custo','Alimentação','Feira','Feira semanal',rand(100,180),'Dinheiro','','');
+addTx(month+'-07','custo','Transporte','Combustível','Abastecimento',rand(300,480),'Crédito','Inter Crédito','');
+if(chance(0.3)) addTx(month+'-'+String(randInt(1,28)).padStart(2,'0'),'custo','Transporte','Manutenção','Revisão/manutenção do veículo',rand(200,900),'Débito','Itaú Débito','Itaú Conta Corrente');
+if(['01','07'].includes(m)) addTx(month+'-14','custo','Transporte','Seguro','Seguro do veículo (semestral)',1450,'Débito','Itaú Débito','Itaú Conta Corrente');
+addTx(month+'-03','custo','Saúde','Plano de Saúde','Mensalidade plano de saúde',650,'Débito','Itaú Débito','Itaú Conta Corrente');
+if(chance(0.4)) addTx(month+'-'+String(randInt(1,28)).padStart(2,'0'),'custo','Saúde','Farmácia','Medicamentos',rand(60,200),'Crédito','Nubank Ultravioleta','');
+if(chance(0.15)) addTx(month+'-'+String(randInt(1,28)).padStart(2,'0'),'custo','Educação','Cursos','Curso online',rand(90,400),'Crédito','Inter Crédito','');
+
+addTx(month+'-'+String(randInt(1,28)).padStart(2,'0'),'despesa','Lazer','Restaurantes','Jantares e saídas',rand(200,450),'Crédito','Nubank Ultravioleta','');
+if(chance(0.5)) addTx(month+'-'+String(randInt(1,28)).padStart(2,'0'),'despesa','Lazer','Cinema/Shows','Cinema/shows',rand(60,150),'Crédito','Nubank Ultravioleta','');
+if(chance(0.2)) addTx(month+'-'+String(randInt(1,28)).padStart(2,'0'),'despesa','Lazer','Viagens','Viagem/passeio',rand(1500,4000),'Crédito','Inter Crédito','');
+if(chance(0.3)) addTx(month+'-'+String(randInt(1,28)).padStart(2,'0'),'despesa','Compras','Vestuário','Roupas e calçados',rand(150,400),'Crédito','Nubank Ultravioleta','');
+if(chance(0.12)) addTx(month+'-'+String(randInt(1,28)).padStart(2,'0'),'despesa','Compras','Eletrônicos','Eletrônicos/gadgets',rand(300,1500),'Crédito','Inter Crédito','');
+addTx(month+'-01','despesa','Assinaturas','Streaming','Netflix + Spotify',59.9,'Crédito','Nubank Ultravioleta','');
+addTx(month+'-01','despesa','Assinaturas','Aplicativos','Assinaturas de apps',29.9,'Crédito','Nubank Ultravioleta','');
+addTx(month+'-05','despesa','Assinaturas','Academia','Mensalidade academia',119.9,'Débito','Itaú Débito','Itaú Conta Corrente');
+if(chance(0.4)) addTx(month+'-'+String(randInt(1,28)).padStart(2,'0'),'despesa','Cuidados Pessoais','Salão/Barbearia','Salão/barbearia',rand(60,150),'Débito','Itaú Débito','Itaú Conta Corrente');
+if(chance(0.15)) addTx(month+'-'+String(randInt(1,28)).padStart(2,'0'),'despesa','Outros','Doações','Doação',rand(30,100),'Pix','','Nubank Conta');
+});
+
+let investBase = 25000;
+investmentEvolution = MONTHS.map((month,i)=>{investBase += rand(400,900)+i*15; return {month, total: Math.round(investBase)};});
+totalInvestido = investmentEvolution[investmentEvolution.length-1].total;
+INVESTMENTS = [
+{nome:'Tesouro Selic 2029', tipo:'Renda Fixa', valorInvestido: totalInvestido*0.30, valorAtual: totalInvestido*0.32},
+{nome:'CDB Banco XP 110% CDI', tipo:'Renda Fixa', valorInvestido: totalInvestido*0.15, valorAtual: totalInvestido*0.16},
+{nome:'Ações (Carteira BR)', tipo:'Renda Variável', valorInvestido: totalInvestido*0.20, valorAtual: totalInvestido*0.18},
+{nome:'Fundos Imobiliários (FIIs)', tipo:'Renda Variável', valorInvestido: totalInvestido*0.15, valorAtual: totalInvestido*0.155},
+{nome:'Previdência Privada', tipo:'Previdência', valorInvestido: totalInvestido*0.12, valorAtual: totalInvestido*0.125},
+{nome:'Reserva de Emergência (CDB liquidez diária)', tipo:'Reserva de Emergência', valorInvestido: totalInvestido*0.08, valorAtual: totalInvestido*0.08}
+].map(x=>({...x, valorInvestido:Math.round(x.valorInvestido), valorAtual:Math.round(x.valorAtual)}));
+seedCarData();
+}
+
+/* ============================= HELPERS ============================= */
+function fmtBRL(n){ n = n||0; return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+function fmtPct(n){ return (n*100).toLocaleString('pt-BR',{maximumFractionDigits:1})+'%'; }
+function monthLabel(ym){ if(!ym) return ''; const [y,m]=ym.split('-'); const d=new Date(y,m-1,1); return d.toLocaleDateString('pt-BR',{month:'short',year:'numeric'}).replace('.',''); }
+function availableMonths(){ return [...new Set(MONTHS.concat(transactions.map(t=>t.month)))].sort(); }
+function txForMonth(month){ return transactions.filter(t => t.month === month && !t.isBillPayment); }
+function sumBy(list, type){ return list.filter(t=>t.type===type).reduce((a,t)=>a+t.amount,0); }
+function categoryTotals(list, type){
+const out = {};
+list.filter(t=>t.type===type).forEach(t=>{ out[t.category]=(out[t.category]||0)+t.amount; });
+return out;
+}
+const CHART_COLORS = ['#B5E338','#96C728','#FF6B6B','#FF3B30','#DCE3B8','#455910','#8FA55C','#FFCC00','#9BB06A','#6F7A47'];
+
+let state = { mesRef: '2026-07' };
+let selectedTx = new Set();
+
+function filterByPeriod(list, mes, mesFim, modo){
+if(modo === 'range'){
+if(mes && mes !== 'todos' && mesFim){
+const all = availableMonths();
+const a = all.indexOf(mes), b = all.indexOf(mesFim);
+if(a!==-1 && b!==-1){
+const lo = Math.min(a,b), hi = Math.max(a,b);
+const target = all.slice(lo, hi+1);
+return list.filter(t=>target.includes(t.month));
+}
+}
+return list;
+}
+if(mes && mes !== 'todos') return list.filter(t=>t.month===mes);
+return list;
+}
+
+function addMonthsToDate(dateStr, monthsToAdd) {
+let [y, m, d] = dateStr.split('-').map(Number);
+let date = new Date(y, m - 1 + monthsToAdd, d);
+let resY = date.getFullYear();
+let resM = String(date.getMonth() + 1).padStart(2, '0');
+let resD = String(date.getDate()).padStart(2, '0');
+return `${resY}-${resM}-${resD}`;
+}
+
+// Distribui parcelas/recorrências de cartão de crédito conforme o ciclo da fatura (fechamento/vencimento).
+// Compra após a data de fechamento cai na fatura do MÊS SEGUINTE; as demais parcelas seguem
+// o mesmo ciclo. Para cartões sem fechamento (débito/benefício) mantém o comportamento padrão.
+function invoiceDateForPurchase(cardName, dateStr){
+const card = CARDS.find(c => c.name === cardName);
+if(!card || card.type !== 'Crédito' || !card.closingDay) return dateStr;
+const [y, m, d] = dateStr.split('-').map(Number);
+let invY = y, invM = m;
+if(d > card.closingDay){
+invM++;
+if(invM > 12){ invM = 1; invY++; }
+}
+const monthOfInvoice = invY + '-' + String(invM).padStart(2, '0');
+const day = card.dueDay || card.closingDay;
+return monthOfInvoice + '-' + String(day).padStart(2, '0');
+}
+function installmentInvoiceDate(cardName, dateStr, i){
+const card = CARDS.find(c => c.name === cardName);
+if(!card || card.type !== 'Crédito' || !card.closingDay) return addMonthsToDate(dateStr, i);
+return addMonthsToDate(invoiceDateForPurchase(cardName, dateStr), i);
+}
+
+function getAccountBalance(accountName){
+const acc = ACCOUNTS.find(a => a.name === accountName);
+if(!acc) return 0;
+let balance = acc.initialBalance || 0;
+transactions.forEach(t => {
+if(t.account === accountName){
+if(t.type === 'receita') balance += t.amount;
+else balance -= t.amount;
+}
+});
+return balance;
+}
+
+function getCardBalance(cardName){
+const card = CARDS.find(c => c.name === cardName);
+if(!card) return 0;
+if(card.isBeneficio){
+let balance = card.initialBalance || 0;
+transactions.forEach(t => {
+if(t.card === cardName){
+if(t.type === 'receita') balance += t.amount;
+else balance -= t.amount;
+}
+});
+return balance;
+} else {
+const month = state.mesRef;
+const cur = txForMonth(month);
+return cur.filter(t => t.card === cardName).reduce((a,t) => a + t.amount, 0);
+}
+}
+
+/* ============================= NAV ============================= */
+document.querySelectorAll('.navbtn').forEach(btn=>{
+btn.addEventListener('click', ()=>{
+document.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));
+document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+btn.classList.add('active');
+const tab = btn.dataset.tab;
+document.getElementById('tab-'+tab).classList.add('active');
+const titles = {dashboard:['Dashboard Gerencial','Visão consolidada e inteligência financeira'],
+transacoes:['Transações','Todos os lançamentos de receitas, custos e despesas'],
+orcamento:['Orçado x Realizado','Comparativo entre o planejado e o executado por categoria'],
+comparativo:['Comparativo de Meses','Compare quaisquer dois meses, mesmo não consecutivos'],
+contas:['Contas Bancárias','Saldos de contas e movimentações diretas'],
+cartoes:['Cartões','Controle de cartões de crédito, débito e benefícios'],
+investimentos:['Investimentos','Carteira e evolução patrimonial'],
+metas:['Metas Financeiras','Objetivos e progresso'],
+veiculo:['Manutenção de Carro','Alertas de manutenção, abastecimentos e consumo do veículo'],
+dre:['DRE — Demonstração do Resultado','Receitas, custos e despesas do período'],
+balanco:['Balanço Patrimonial','Ativos, passivos e patrimônio líquido'],
+dados:['Importar / Exportar','Carregue seus dados ou baixe relatórios']};
+document.getElementById('pageTitle').textContent = titles[tab][0];
+document.getElementById('pageSub').textContent = titles[tab][1];
+selectedTx.clear();
+renderAll();
+refreshSelectionUI();
+});
+});
+
+function populateMonthSelects(){
+const months = availableMonths();
+const opts = months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
+document.getElementById('mesRef').innerHTML = opts;
+if(months.includes(state.mesRef)) {
+document.getElementById('mesRef').value = state.mesRef;
+} else if(months.length > 0) {
+state.mesRef = months[months.length - 1];
+document.getElementById('mesRef').value = state.mesRef;
+}
+
+document.getElementById('fMes').innerHTML = '<option value="todos">Todos os meses</option>'+opts;
+document.getElementById('fMesFim').innerHTML = opts;
+if(months.includes(state.mesRef)) document.getElementById('fMesFim').value = state.mesRef;
+document.getElementById('compMesA').innerHTML = opts;
+document.getElementById('compMesB').innerHTML = opts;
+if(months.length > 0){
+document.getElementById('compMesA').value = months[0];
+document.getElementById('compMesB').value = state.mesRef;
+}
+
+// selects de exclusão por período
+document.getElementById('delMesInicio').innerHTML = opts;
+document.getElementById('delMesFim').innerHTML = opts;
+if(months.includes(state.mesRef)){
+document.getElementById('delMesInicio').value = state.mesRef;
+document.getElementById('delMesFim').value = state.mesRef;
+}
+
+// selects de período das abas Contas Bancárias e Cartões
+['cMes','kMes'].forEach(id=>{
+const el = document.getElementById(id);
+if(el) el.innerHTML = '<option value="todos">Todos os meses</option>'+opts;
+});
+// Cartões: padrão = mês de referência (visão de fatura mensal)
+const elKMes = document.getElementById('kMes');
+if(elKMes && months.includes(state.mesRef)) elKMes.value = state.mesRef;
+['cMesFim','kMesFim'].forEach(id=>{
+const el = document.getElementById(id);
+if(el){
+el.innerHTML = opts;
+if(months.includes(state.mesRef)) el.value = state.mesRef;
+}
+});
+}
+document.getElementById('mesRef').addEventListener('change', e=>{ state.mesRef = e.target.value; renderAll(); });
+
+document.getElementById('btnMesPrev').addEventListener('click', ()=>{
+const all = availableMonths();
+const i = all.indexOf(state.mesRef);
+if(i > 0){ state.mesRef = all[i-1]; document.getElementById('mesRef').value = state.mesRef; renderAll(); }
+});
+document.getElementById('btnMesNext').addEventListener('click', ()=>{
+const all = availableMonths();
+const i = all.indexOf(state.mesRef);
+if(i < all.length-1){ state.mesRef = all[i+1]; document.getElementById('mesRef').value = state.mesRef; renderAll(); }
+});
+
+/* ============================= FILTRO DE TRANSAÇÕES POR MÊS ÚNICO OU INTERVALO ============================= */
+document.getElementById('fModoPeriodo').addEventListener('change', e=>{
+const mode = e.target.value;
+if(mode === 'single'){
+document.getElementById('boxFMesFim').style.display = 'none';
+document.getElementById('labelFMes').textContent = 'Mês';
+document.getElementById('fMes').innerHTML = document.getElementById('fMes').innerHTML; // mantém opções
+} else {
+document.getElementById('boxFMesFim').style.display = 'block';
+document.getElementById('labelFMes').textContent = 'De (mês inicial)';
+if(document.getElementById('fMes').value === 'todos' && document.getElementById('fMes').options.length > 1){
+document.getElementById('fMes').selectedIndex = 1;
+}
+}
+renderTransacoes();
+});
+document.getElementById('delMode').addEventListener('change', e=>{
+const mode = e.target.value;
+if(mode === 'single'){
+document.getElementById('boxDelMesFim').style.display = 'none';
+document.getElementById('labelDelMesInicio').textContent = 'Mês para Excluir';
+} else {
+document.getElementById('boxDelMesFim').style.display = 'block';
+document.getElementById('labelDelMesInicio').textContent = 'Mês Inicial (De)';
+}
+});
+
+/* ============================= SELEÇÃO EM LOTE (EXCLUSÃO POR CHECKBOX) ============================= */
+function refreshSelectionUI(){
+const btnTx = document.getElementById('btnExcluirSelecionadosTx');
+if(btnTx){
+btnTx.style.display = selectedTx.size ? 'inline-flex' : 'none';
+document.getElementById('selCountTx').textContent = selectedTx.size;
+document.getElementById('btnLimparSelecaoTx').style.display = selectedTx.size ? 'inline-flex' : 'none';
+}
+const btnContas = document.getElementById('btnExcluirSelecionadosContas');
+if(btnContas){
+btnContas.style.display = selectedTx.size ? 'inline-flex' : 'none';
+document.getElementById('selCountContas').textContent = selectedTx.size;
+}
+const btnCartoes = document.getElementById('btnExcluirSelecionadosCartoes');
+if(btnCartoes){
+btnCartoes.style.display = selectedTx.size ? 'inline-flex' : 'none';
+document.getElementById('selCountCartoes').textContent = selectedTx.size;
+}
+}
+
+function updateTxSelection(){
+const rows = [...document.querySelectorAll('#tblTransacoes .row-check[data-id]')];
+const selAll = document.getElementById('selAllTx');
+if(selAll && rows.length) selAll.checked = rows.every(c=>selectedTx.has(+c.dataset.id));
+refreshSelectionUI();
+}
+
+document.addEventListener('change', e=>{
+const t = e.target;
+if(!t || !t.classList) return;
+if(t.classList.contains('row-check') && t.dataset.id){
+const id = +t.dataset.id;
+if(t.checked) selectedTx.add(id); else selectedTx.delete(id);
+updateTxSelection();
+return;
+}
+if(t.id === 'selAllTx'){
+document.querySelectorAll('#tblTransacoes .row-check[data-id]').forEach(c=>{
+if(t.checked) selectedTx.add(+c.dataset.id); else selectedTx.delete(+c.dataset.id);
+c.checked = t.checked;
+});
+refreshSelectionUI();
+return;
+}
+if(t.classList.contains('sel-all-acc')){
+const card = t.closest('.card');
+if(card){
+card.querySelectorAll('.row-check[data-id]').forEach(c=>{
+if(t.checked) selectedTx.add(+c.dataset.id); else selectedTx.delete(+c.dataset.id);
+c.checked = t.checked;
+});
+}
+refreshSelectionUI();
+return;
+}
+});
+
+function deleteSelectedTransactions(){
+if(!selectedTx.size) return;
+const selectedObjs = transactions.filter(x=>selectedTx.has(x.id));
+const hasGroup = selectedObjs.some(x=>x.grupoParcelamento);
+if(!confirm(`Excluir ${selectedTx.size} lançamento(s) selecionado(s)? Esta ação não pode ser desfeita.`)) return;
+let deleteGroupToo = false;
+if(hasGroup){
+deleteGroupToo = confirm('Alguns selecionados pertencem a parcelamentos/recorrências. Deseja excluir também as demais parcelas desses grupos? (Cancelar exclui apenas os selecionados)');
+}
+if(deleteGroupToo){
+const grupos = [...new Set(selectedObjs.filter(x=>x.grupoParcelamento).map(x=>x.grupoParcelamento))];
+transactions = transactions.filter(x=> !selectedTx.has(x.id) && !(x.grupoParcelamento && grupos.includes(x.grupoParcelamento)));
+} else {
+transactions = transactions.filter(x=> !selectedTx.has(x.id));
+}
+const count = selectedTx.size;
+selectedTx.clear();
+populateMonthSelects(); populateCategoryFilters(); renderAll();
+alert(`${count} lançamento(s) excluído(s) com sucesso.`);
+}
+document.getElementById('btnExcluirSelecionadosTx').addEventListener('click', deleteSelectedTransactions);
+document.getElementById('btnExcluirSelecionadosContas').addEventListener('click', deleteSelectedTransactions);
+document.getElementById('btnExcluirSelecionadosCartoes').addEventListener('click', deleteSelectedTransactions);
+
+document.getElementById('btnLimparSelecaoTx').addEventListener('click', ()=>{
+selectedTx.clear();
+document.querySelectorAll('.row-check').forEach(c=>c.checked=false);
+refreshSelectionUI();
+renderAll();
+});
+
+/* ============================= PERÍODO NAS ABAS CONTAS E CARTÕES ============================= */
+function bindPeriodToggle(modeId, boxId, labelId, renderFn){
+document.getElementById(modeId).addEventListener('change', e=>{
+const isRange = e.target.value === 'range';
+document.getElementById(boxId).style.display = isRange ? 'block' : 'none';
+document.getElementById(labelId).textContent = isRange ? 'De (mês inicial)' : 'Mês';
+renderFn();
+});
+}
+bindPeriodToggle('cModoPeriodo','boxCMesFim','labelCMes', renderAll);
+bindPeriodToggle('kModoPeriodo','boxKMesFim','labelKMes', renderAll);
+['cMes','cMesFim','kMes','kMesFim'].forEach(id=>document.getElementById(id).addEventListener('change', renderAll));
+
+function deleteTransactionsByPeriod(mInicio, mFim){
+let targetMonths = [];
+if(!mFim || mInicio === mFim){
+targetMonths = [mInicio];
+} else {
+const all = availableMonths();
+const idxStart = all.indexOf(mInicio);
+const idxEnd = all.indexOf(mFim);
+if(idxStart === -1 || idxEnd === -1){
+alert('Períodos selecionados não foram encontrados na base.');
+return;
+}
+const minIdx = Math.min(idxStart, idxEnd);
+const maxIdx = Math.max(idxStart, idxEnd);
+targetMonths = all.slice(minIdx, maxIdx + 1);
+}
+
+const txsToDelete = transactions.filter(t => targetMonths.includes(t.month));
+if(txsToDelete.length === 0){
+alert('Nenhum lançamento encontrado no período selecionado.');
+return;
+}
+
+const labelPeriodo = targetMonths.length === 1
+? monthLabel(targetMonths[0])
+: `${monthLabel(targetMonths[0])} até ${monthLabel(targetMonths[targetMonths.length-1])}`;
+
+if(confirm(`Tem certeza que deseja EXCLUIR TODOS os ${txsToDelete.length} lançamentos do período ${labelPeriodo}? Esta ação não pode ser desfeita.`)){
+transactions = transactions.filter(t => !targetMonths.includes(t.month));
+alert(`${txsToDelete.length} lançamentos foram excluídos com sucesso.`);
+populateMonthSelects();
+populateCategoryFilters();
+renderAll();
+}
+}
+
+document.getElementById('btnExcluirLote').addEventListener('click', ()=>{
+const mode = document.getElementById('delMode').value;
+const mInicio = document.getElementById('delMesInicio').value;
+const mFim = mode === 'range' ? document.getElementById('delMesFim').value : mInicio;
+deleteTransactionsByPeriod(mInicio, mFim);
+});
+
+document.getElementById('btnExcluirPorPeriodoTop').addEventListener('click', ()=>{
+const months = availableMonths();
+if(!months.length) { alert('Não há lançamentos cadastrados.'); return; }
+const opts = months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
+
+const body = `
+<div class="field full">
+<label class="field-label">Tipo de Exclusão</label>
+<select id="modalDelMode" class="full">
+<option value="single">Mês Específico</option>
+<option value="range">Intervalo de Meses</option>
+</select>
+</div>
+<div class="field full" id="boxModalDelStart">
+<label class="field-label" id="lblModalDelStart">Selecionar Mês</label>
+<select id="modalDelStart" class="full">${opts}</select>
+</div>
+<div class="field full" id="boxModalDelEnd" style="display:none;">
+<label class="field-label">Até o Mês</label>
+<select id="modalDelEnd" class="full">${opts}</select>
+</div>
+<div style="margin-top:16px; font-size:12px; color:var(--danger-light); font-weight:600;">
+⚠️ Atenção: Todos os lançamentos do período escolhido serão permanentemente removidos.
+</div>
+<div style="display:flex; gap:10px; margin-top:16px;">
+<button class="btn danger full" id="btnConfirmModalDel">Confirmar Exclusão</button>
+</div>
+`;
+openModal('Excluir Lançamentos por Período', body);
+
+document.getElementById('modalDelStart').value = state.mesRef;
+document.getElementById('modalDelEnd').value = state.mesRef;
+
+document.getElementById('modalDelMode').addEventListener('change', (e)=>{
+if(e.target.value === 'single'){
+document.getElementById('boxModalDelEnd').style.display = 'none';
+document.getElementById('lblModalDelStart').textContent = 'Selecionar Mês';
+} else {
+document.getElementById('boxModalDelEnd').style.display = 'block';
+document.getElementById('lblModalDelStart').textContent = 'Do Mês';
+}
+});
+
+document.getElementById('btnConfirmModalDel').addEventListener('click', ()=>{
+const mode = document.getElementById('modalDelMode').value;
+const mInicio = document.getElementById('modalDelStart').value;
+const mFim = mode === 'range' ? document.getElementById('modalDelEnd').value : mInicio;
+closeModal();
+deleteTransactionsByPeriod(mInicio, mFim);
+});
+});
+
+/* ============================= DASHBOARD CFO ============================= */
+let charts = {};
+function killChart(id){ if(charts[id]){ charts[id].destroy(); delete charts[id]; } }
+function chartDefaults(){
+Chart.defaults.font.family = "'Montserrat', sans-serif";
+Chart.defaults.color = '#B9BFA6';
+Chart.defaults.borderColor = '#2a2c1c';
+}
+
+function renderDashboard(){
+const month = state.mesRef;
+const cur = txForMonth(month);
+const idx = MONTHS.indexOf(month);
+const prevMonth = MONTHS[idx-1];
+const prev = prevMonth ? txForMonth(prevMonth) : [];
+
+const receita = sumBy(cur,'receita'), custo = sumBy(cur,'custo'), despesa = sumBy(cur,'despesa');
+const resultado = receita-custo-despesa;
+const poupanca = receita>0 ? resultado/receita : 0;
+const receitaP = sumBy(prev,'receita'), custoP = sumBy(prev,'custo'), despesaP = sumBy(prev,'despesa');
+const resultadoP = receitaP-custoP-despesaP;
+
+function deltaHtml(cur,prev,inverse){
+if(!prev) return '<div class="delta">sem mês anterior</div>';
+const d = prev!==0 ? (cur-prev)/Math.abs(prev) : 0;
+const good = inverse ? d<0 : d>0;
+return `<div class="delta ${good?'up':'down'}">${d>=0?'▲':'▼'} ${fmtPct(Math.abs(d))} vs mês anterior</div>`;
+}
+const evo = investmentEvolution[idx] ? investmentEvolution[idx].total : totalInvestido;
+const goalsProgress = GOALS.reduce((a,g)=>a+g.atual/g.alvo,0)/GOALS.length;
+
+// CFO Metric: Runway (Meses de Sobrevivência)
+const custoTotalMensal = custo + despesa;
+const totalContas = ACCOUNTS.reduce((a, acc) => a + getAccountBalance(acc.name), 0);
+const runway = custoTotalMensal > 0 ? ((evo + totalContas) / custoTotalMensal).toFixed(1) : '∞';
+
+document.getElementById('kpiRow').innerHTML = `
+<div class="card kpi"><div class="label">Receita do mês</div><div class="value">${fmtBRL(receita)}</div>${deltaHtml(receita,receitaP,false)}</div>
+<div class="card kpi"><div class="label">Custos + Despesas</div><div class="value">${fmtBRL(custo+despesa)}</div>${deltaHtml(custo+despesa,custoP+despesaP,true)}</div>
+<div class="card kpi"><div class="label">Resultado do mês</div><div class="value" style="color:${resultado>=0?'var(--olive-light)':'var(--danger-light)'}">${fmtBRL(resultado)}</div>${deltaHtml(resultado,resultadoP,false)}</div>
+<div class="card kpi"><div class="label">Taxa de poupança</div><div class="value">${fmtPct(poupanca)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.max(0,Math.min(100,poupanca*100))}%"></div></div></div>
+<div class="card kpi"><div class="label">Patrimônio investido</div><div class="value">${fmtBRL(evo)}</div><div class="delta">carteira consolidada</div></div>
+<div class="card kpi"><div class="label">Meses de Autonomia (Runway)</div><div class="value" style="color:var(--olive-light);">${runway} meses</div><div class="delta">liquidez / custo fixo</div></div>
+<div class="card kpi"><div class="label">Maior Categoria</div><div class="value" style="font-size:16px;">${topCategory(cur)}</div><div class="delta">custo + despesa</div></div>
+<div class="card kpi"><div class="label">Total em metas</div><div class="value">${fmtPct(goalsProgress)}</div><div class="bar-track"><div class="bar-fill" style="width:${goalsProgress*100}%"></div></div></div>
+`;
+
+// RENDIMENTOS E ALOCAÇÃO INTELIGENTE (MODELO CFO)
+renderSmartAllocation(receita, custo, despesa, resultado);
+
+document.getElementById('tagMesGasto').textContent = monthLabel(month);
+
+const window6 = MONTHS.slice(Math.max(0,idx-5), idx+1);
+killChart('tendencia');
+chartDefaults();
+charts.tendencia = new Chart(document.getElementById('chartTendencia'), {
+type:'bar',
+data:{ labels:window6.map(monthLabel), datasets:[
+{label:'Receitas', backgroundColor:'#B5E338', data:window6.map(m=>sumBy(txForMonth(m),'receita'))},
+{label:'Custos (Fixos/Var)', backgroundColor:'#455910', data:window6.map(m=>sumBy(txForMonth(m),'custo'))},
+{label:'Despesas (Estilo de Vida)', backgroundColor:'#FF3B30', data:window6.map(m=>sumBy(txForMonth(m),'despesa'))}
+]},
+options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{boxWidth:10, font:{size:11}}}}, scales:{ y:{ grid:{color:'#1c1e12'}, ticks:{callback:v=>'R$ '+(v/1000)+'k'}}, x:{grid:{display:false}} } }
+});
+
+const catT = {}; cur.filter(t=>t.type!=='receita').forEach(t=>{catT[t.category]=(catT[t.category]||0)+t.amount;});
+killChart('categoria');
+charts.categoria = new Chart(document.getElementById('chartCategoria'), {
+type:'doughnut',
+data:{ labels:Object.keys(catT), datasets:[{ data:Object.values(catT), backgroundColor:CHART_COLORS, borderColor:'#0e0f0a', borderWidth:2 }] },
+options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right', labels:{boxWidth:10, labels:{boxWidth:10, font:{size:10.5}}}}} }
+});
+
+const topOrc = Object.keys(BUDGETS).map(c=>({cat:c, orc:BUDGETS[c], real:catTotalForMonthCat(cur,c)})).filter(x=>categoryType(x.cat)!=='receita').sort((a,b)=>b.real-a.real).slice(0,6);
+killChart('orcadoMini');
+charts.orcadoMini = new Chart(document.getElementById('chartOrcadoMini'), {
+type:'bar',
+data:{ labels:topOrc.map(x=>x.cat), datasets:[
+{label:'Orçado', backgroundColor:'#3c421f', data:topOrc.map(x=>x.orc)},
+{label:'Realizado', backgroundColor:'#B5E338', data:topOrc.map(x=>x.real)}
+]},
+options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{boxWidth:10,font:{size:11}}}}, scales:{x:{grid:{color:'#1c1e12'}}, y:{grid:{display:false}}} }
+});
+
+const window12 = MONTHS.slice(Math.max(0,idx-11), idx+1);
+killChart('patrimonioMini');
+charts.patrimonioMini = new Chart(document.getElementById('chartPatrimonioMini'), {
+type:'line',
+data:{ labels:window12.map(monthLabel), datasets:[{ label:'Patrimônio investido', data:window12.map(m=>{const e=investmentEvolution.find(x=>x.month===m); return e?e.total:null;}), borderColor:'#B5E338', backgroundColor:'rgba(181,227,56,0.15)', fill:true, tension:.3, pointRadius:2 }] },
+options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ y:{grid:{color:'#1c1e12'}, ticks:{callback:v=>'R$ '+(v/1000)+'k'}}, x:{grid:{display:false}} } }
+});
+
+renderInsights(cur, prev, month, receita, custo, despesa);
+
+document.getElementById('miniGoals').innerHTML = GOALS.map(g=>{
+const pct = Math.min(1, g.atual/g.alvo);
+return `<div class="progress-row"><div class="prow-top"><span>${g.nome}</span><b>${fmtPct(pct)}</b></div><div class="ptrack"><div class="pfill" style="width:${pct*100}%"></div></div></div>`;
+}).join('');
+}
+
+/* ============================= LÓGICA CFO DE DISTRIBUIÇÃO ============================= */
+function renderSmartAllocation(receita, custoReal, despesaReal, resultadoReal){
+const targetEss = (parseFloat(document.getElementById('targetEssential').value)||0)/100;
+const targetWants = (parseFloat(document.getElementById('targetWants').value)||0)/100;
+const targetFut = (parseFloat(document.getElementById('targetFuture').value)||0)/100;
+
+const essT = receita * targetEss;
+const wantsT = receita * targetWants;
+const futT = receita * targetFut;
+
+const futReal = Math.max(0, resultadoReal);
+
+function getCardHtml(title, targetVal, realVal, percentTarget){
+const diff = targetVal - realVal;
+const isOver = diff < 0;
+const realPct = receita > 0 ? (realVal / receita) : 0;
+
+return `
+<div class="alloc-card">
+<h5>${title} (${(percentTarget*100).toFixed(0)}% Meta)</h5>
+<div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:4px;">
+<div>
+<div class="alloc-val">${fmtBRL(realVal)}</div>
+<div style="font-size:11px; color:var(--muted);">${fmtPct(realPct)} da renda</div>
+</div>
+<div style="text-align:right;">
+<div style="font-size:12px; font-weight:700;">Meta: ${fmtBRL(targetVal)}</div>
+<div class="alloc-diff ${isOver?'neg':'pos'}">${diff>=0 ? 'Disp: '+fmtBRL(diff) : 'Excesso: '+fmtBRL(Math.abs(diff))}</div>
+</div>
+</div>
+<div class="ptrack" style="margin-top:8px;">
+<div class="pfill ${isOver?'over':''}" style="width:${Math.min(100, (realVal/(targetVal||1))*100)}%"></div>
+</div>
+</div>
+`;
+}
+
+document.getElementById('allocCardsBox').innerHTML =
+getCardHtml('1. Custos Essenciais (Fixos + Var)', essT, custoReal, targetEss) +
+getCardHtml('2. Desejos & Estilo de Vida', wantsT, despesaReal, targetWants) +
+getCardHtml('3. Futuro & Investimentos', futT, futReal, targetFut);
+}
+
+function categoryType(cat){
+for(const t of ['receita','custo','despesa']){ if(CATEGORIES[t][cat]) return t; }
+return null;
+}
+function catTotalForMonthCat(list, cat){ return list.filter(t=>t.category===cat).reduce((a,t)=>a+t.amount,0); }
+function topCategory(list){
+const t = categoryTotals(list,'custo'); const d = categoryTotals(list,'despesa');
+const all = {...t}; Object.keys(d).forEach(k=>all[k]=(all[k]||0)+d[k]);
+const keys = Object.keys(all);
+if(!keys.length) return '—';
+keys.sort((a,b)=>all[b]-all[a]);
+return keys[0];
+}
+
+function renderInsights(cur, prev, month, receita, custo, despesa){
+const box = document.getElementById('insightsBox');
+const resultado = receita-custo-despesa;
+const poupanca = receita>0?resultado/receita:0;
+let items = [];
+
+const targetFut = (parseFloat(document.getElementById('targetFuture').value)||0)/100;
+
+if(poupanca >= targetFut){
+items.push({level:'ok', text:`<b>Aporte Estratégico:</b> Sua taxa de poupança/investimento (${fmtPct(poupanca)}) atingiu a meta de ${fmtPct(targetFut)}. Excelente disciplina de capital.`});
+} else if(poupanca > 0){
+items.push({level:'warn', text:`<b>Alerta de Aporte:</b> Você poupou ${fmtPct(poupanca)}, abaixo da meta estabelecida de ${fmtPct(targetFut)}. Tente renegociar despesas variáveis.`});
+} else {
+items.push({level:'bad', text:`<b>Déficit Operacional:</b> Gastos superaram receitas em ${fmtBRL(Math.abs(resultado))}. Risco de erosão patrimonial.`});
+}
+
+const overs = Object.keys(BUDGETS).filter(c=>{ const t=categoryType(c); if(t==='receita') return false; const real=catTotalForMonthCat(cur,c); return real>BUDGETS[c];});
+if(overs.length){ overs.forEach(c=>{ const real=catTotalForMonthCat(cur,c); items.push({level:'bad', text:`Categoria "${c}" estourou o teto orçamentário: ${fmtBRL(real)} vs ${fmtBRL(BUDGETS[c])} previsto.`}); }); }
+
+CARDS.filter(c=>c.type==='Crédito').forEach(c=>{
+const spent = cur.filter(t=>t.card===c.name).reduce((a,t)=>a+t.amount,0);
+if(c.monthlyLimit && spent > c.monthlyLimit){
+items.push({level:'bad', text:`<b>Alerta de Cartão:</b> ${c.name} excedeu o limite em ${fmtBRL(spent - c.monthlyLimit)}.`});
+}
+});
+
+box.innerHTML = items.map(i=>`<div class="insight ${i.level}"><div class="dot"></div><div>${i.text}</div></div>`).join('');
+}
+
+/* ============================= CONTAS BANCÁRIAS ============================= */
+function renderContas(){
+const periodList = filterByPeriod(transactions, document.getElementById('cMes').value, document.getElementById('cMesFim').value, document.getElementById('cModoPeriodo').value);
+document.getElementById('contasBox').innerHTML = ACCOUNTS.map((acc, idx)=>{
+const balance = getAccountBalance(acc.name);
+const txs = periodList.filter(t => t.account === acc.name).sort((a,b) => b.date.localeCompare(a.date));
+
+return `<div class="card">
+<div class="card-tile">
+<div class="card-tile-head">
+<h4>${acc.name}</h4>
+<div class="action-btns">
+<button class="btn small primary" onclick="openTxForm(null, '${acc.name}')">+ Lançar</button>
+<button class="icon-btn" title="Editar" onclick="openAccountForm(${idx})">✎</button>
+<button class="icon-btn danger" title="Excluir" onclick="deleteAccount(${idx})">🗑</button>
+</div>
+</div>
+<div style="margin-top:8px;">
+<div style="font-size:11px; color:var(--muted-2);">Saldo Inicial: ${fmtBRL(acc.initialBalance)}</div>
+<div style="font-size:22px; font-weight:800; color:${balance>=0?'var(--olive-light)':'var(--danger-light)'}; margin-top:2px;">
+${fmtBRL(balance)}
+</div>
+</div>
+</div>
+<div class="table-scroll" style="max-height:220px;">
+<table>
+<thead><tr><th style="width:28px;"><input type="checkbox" class="row-check sel-all-acc" title="Selecionar todos"></th><th>Data</th><th>Tipo</th><th>Descrição</th><th class="num">Valor</th></tr></thead>
+<tbody>
+${txs.length ? txs.slice(0,50).map(t => `
+<tr>
+<td><input type="checkbox" class="row-check" data-id="${t.id}" ${selectedTx.has(t.id)?'checked':''}></td>
+<td>${t.date.split('-').reverse().join('/')}</td>
+<td><span class="pill ${t.type}">${t.type}</span></td>
+<td>${t.description}</td>
+<td class="num ${t.type==='receita'?'pos':''}">${fmtBRL(t.amount)}</td>
+</tr>
+`).join('') : '<tr><td colspan="5" class="empty">Nenhuma movimentação registrada.</td></tr>'}
+</tbody>
+</table>
+</div>
+</div>`;
+}).join('');
+refreshSelectionUI();
+}
+
+function openAccountForm(idx){
+const editing = idx != null;
+const acc = editing ? ACCOUNTS[idx] : {name:'', initialBalance:0};
+const body = `
+<div class="field full"><label class="field-label">Nome da Conta / Banco</label><input type="text" id="fmAccName" class="full" value="${(acc.name||'').replace(/"/g,'&quot;')}" placeholder="ex: Itaú Conta Corrente"></div>
+<div class="field full"><label class="field-label">Saldo Inicial (R$)</label><input type="number" id="fmAccBalance" class="full" step="0.01" value="${acc.initialBalance||0}"></div>
+<div style="display:flex; gap:10px; margin-top:14px;">
+<button class="btn primary" id="fmAccSave" style="flex:1;">${editing?'Salvar Alterações':'Adicionar Conta'}</button>
+${editing?'<button class="btn" id="fmAccDelete" style="color:var(--danger-light);">Excluir</button>':''}
+</div>`;
+
+openModal(editing?'Editar Conta Bancária':'Nova Conta Bancária', body);
+
+document.getElementById('fmAccSave').addEventListener('click', ()=>{
+const name = document.getElementById('fmAccName').value.trim();
+const initialBalance = parseFloat(document.getElementById('fmAccBalance').value) || 0;
+
+if(!name){ alert('Informe o nome da conta.'); return; }
+
+if(editing) Object.assign(ACCOUNTS[idx], {name, initialBalance});
+else ACCOUNTS.push({id: idCounter++, name, initialBalance});
+
+closeModal(); renderAll();
+});
+
+if(editing) document.getElementById('fmAccDelete').addEventListener('click', ()=>{
+if(confirm('Excluir esta conta bancária?')){ ACCOUNTS.splice(idx,1); closeModal(); renderAll(); }
+});
+}
+
+function deleteAccount(idx){
+if(confirm('Excluir esta conta bancária?')){ ACCOUNTS.splice(idx,1); renderAll(); }
+}
+document.getElementById('btnNovaConta').addEventListener('click', ()=>openAccountForm(null));
+
+/* ============================= DEMAIS MÓDULOS REAPROVEITADOS ============================= */
+function populateCategoryFilters(){
+const fTipo = document.getElementById('fTipo').value;
+const catSel = document.getElementById('fCategoria');
+let cats = [];
+if(fTipo==='todos'){ Object.values(CATEGORIES).forEach(o=>cats.push(...Object.keys(o))); }
+else { cats = Object.keys(CATEGORIES[fTipo]); }
+catSel.innerHTML = '<option value="todos">Todas</option>' + cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+populateSubcategoryFilter();
+populatePersonFilter();
+}
+function populateSubcategoryFilter(){
+const fTipo = document.getElementById('fTipo').value;
+const fCat = document.getElementById('fCategoria').value;
+const subSel = document.getElementById('fSubcategoria');
+let subs = [];
+const pool = fTipo==='todos' ? {...CATEGORIES.receita, ...CATEGORIES.custo, ...CATEGORIES.despesa} : CATEGORIES[fTipo];
+if(fCat!=='todos' && pool[fCat]) subs = pool[fCat];
+else Object.values(pool).forEach(s=>subs.push(...s));
+subSel.innerHTML = '<option value="todos">Todas</option>' + [...new Set(subs)].map(s=>`<option value="${s}">${s}</option>`).join('');
+}
+function populatePersonFilter(){
+const sel = document.getElementById('fPessoa');
+const atual = sel.value;
+const pessoas = listaPessoas();
+sel.innerHTML = '<option value="todos">Todos</option>' + pessoas.map(p=>`<option value="${p}">${p}</option>`).join('');
+if(pessoas.includes(atual)) sel.value = atual;
+}
+document.getElementById('fTipo').addEventListener('change', ()=>{ populateCategoryFilters(); renderTransacoes(); });
+document.getElementById('fCategoria').addEventListener('change', ()=>{ populateSubcategoryFilter(); renderTransacoes(); });
+['fSubcategoria','fMes','fMesFim','fPessoa','fBusca'].forEach(id=>document.getElementById(id).addEventListener('input', renderTransacoes));
+document.getElementById('btnLimparFiltros').addEventListener('click', ()=>{
+document.getElementById('fTipo').value='todos'; populateCategoryFilters();
+document.getElementById('fMes').value='todos'; document.getElementById('fBusca').value='';
+document.getElementById('fPessoa').value='todos';
+document.getElementById('fModoPeriodo').value='single';
+document.getElementById('boxFMesFim').style.display='none';
+document.getElementById('labelFMes').textContent='Mês';
+renderTransacoes();
+});
+
+function renderTransacoes(){
+const fTipo=document.getElementById('fTipo').value, fCat=document.getElementById('fCategoria').value,
+fSub=document.getElementById('fSubcategoria').value, fMes=document.getElementById('fMes').value,
+fMesFim=document.getElementById('fMesFim').value, fModoPeriodo=document.getElementById('fModoPeriodo').value,
+fPessoa=document.getElementById('fPessoa').value,
+fBusca=document.getElementById('fBusca').value.toLowerCase();
+let list = transactions.slice();
+if(fTipo!=='todos') list = list.filter(t=>t.type===fTipo);
+if(fCat!=='todos') list = list.filter(t=>t.category===fCat);
+if(fSub!=='todos') list = list.filter(t=>t.subcategory===fSub);
+if(fPessoa!=='todos') list = list.filter(t=>t.pessoa===fPessoa);
+if(fBusca) list = list.filter(t=>t.description.toLowerCase().includes(fBusca));
+list = filterByPeriod(list, fMes, fMesFim, fModoPeriodo);
+list.sort((a,b)=>b.date.localeCompare(a.date));
+document.getElementById('totalLancamentos').textContent = list.length+' lançamentos';
+const sRec = list.filter(t=>t.type==='receita').reduce((a,t)=>a+t.amount,0);
+const sCus = list.filter(t=>t.type==='custo').reduce((a,t)=>a+t.amount,0);
+const sDes = list.filter(t=>t.type==='despesa').reduce((a,t)=>a+t.amount,0);
+const sRes = sRec-sCus-sDes;
+document.getElementById('txSummary').innerHTML = `
+<div class="s-chip"><div class="sl">Receitas</div><div class="sv pos">${fmtBRL(sRec)}</div></div>
+<div class="s-chip"><div class="sl">Custos</div><div class="sv">${fmtBRL(sCus)}</div></div>
+<div class="s-chip"><div class="sl">Despesas</div><div class="sv neg">${fmtBRL(sDes)}</div></div>
+<div class="s-chip"><div class="sl">Resultado</div><div class="sv" style="color:${sRes>=0?'var(--olive-light)':'var(--danger-light)'}">${fmtBRL(sRes)}</div></div>
+<div class="s-chip"><div class="sl">Lançamentos</div><div class="sv">${list.length}</div></div>`;
+document.getElementById('tblTransacoes').innerHTML = list.slice(0,500).map(t=>{
+const parcelaBadge = t.parcelaAtual && t.parcelaTotal ? `<span class="badge-parcela">${t.parcelaAtual}/${t.parcelaTotal}</span>` : '<span class="muted-2">-</span>';
+const pessoaBadge = t.pessoa ? `<span class="badge-pessoa">${t.pessoa}</span>` : '';
+return `
+<tr ${t.isBillPayment?'style="opacity:0.85; background:rgba(181,227,56,0.03)"':''}>
+<td><input type="checkbox" class="row-check" data-id="${t.id}" ${selectedTx.has(t.id)?'checked':''}></td>
+<td>${t.date.split('-').reverse().join('/')}</td>
+<td><span class="pill ${t.type}">${t.type}</span></td>
+<td>${t.category}</td><td>${t.subcategory}</td><td>${t.description}</td>
+<td>${parcelaBadge}</td>
+<td>${pessoaBadge}</td>
+<td class="badge-method">${t.method}${t.account?' · '+t.account:''}${t.card?' · '+t.card:''}</td>
+<td class="num ${t.type==='receita'?'pos':''}">${fmtBRL(t.amount)}</td>
+<td><div class="action-btns"><button class="icon-btn" title="Editar" onclick="openTxForm(${t.id})">✎</button><button class="icon-btn danger" title="Excluir" onclick="deleteTx(${t.id})">🗑</button></div></td></tr>`;
+}).join('') || '<tr><td colspan="11" class="empty">Nenhum lançamento encontrado.</td></tr>';
+const total = list.reduce((a,t)=> a + (t.type==='receita'? t.amount : -t.amount), 0);
+document.getElementById('totalFiltro').textContent = fmtBRL(total);
+updateTxSelection();
+
+// Resumo por pessoa (sobre a lista filtrada)
+const porPessoa = {};
+list.forEach(t=>{
+if(!t.pessoa) return;
+if(!porPessoa[t.pessoa]) porPessoa[t.pessoa] = {qtd:0, total:0};
+porPessoa[t.pessoa].qtd++;
+porPessoa[t.pessoa].total += (t.type==='receita'? t.amount : -t.amount);
+});
+const pessoasKeys = Object.keys(porPessoa);
+const boxResumo = document.getElementById('cardResumoPessoa');
+if(pessoasKeys.length){
+boxResumo.style.display='block';
+document.getElementById('tblResumoPessoa').innerHTML = pessoasKeys.sort((a,b)=>a.localeCompare(b,'pt-BR')).map(p=>`
+<tr><td>${p}</td><td>${porPessoa[p].qtd}</td><td class="num ${porPessoa[p].total>=0?'pos':'neg'}">${fmtBRL(porPessoa[p].total)}</td></tr>`).join('');
+} else {
+boxResumo.style.display='none';
+}
+}
+
+
+function renderOrcamento(){
+const month = state.mesRef;
+const cur = txForMonth(month);
+document.getElementById('orcMesLabel').textContent = monthLabel(month);
+const rows = Object.keys(BUDGETS).map(cat=>{
+const type = categoryType(cat);
+const real = catTotalForMonthCat(cur, cat);
+const orc = BUDGETS[cat];
+const diff = orc - real;
+const pct = orc>0 ? real/orc : 0;
+return {type, cat, orc, real, diff, pct};
+}).sort((a,b)=> (a.type>b.type?1:-1) || b.real-a.real);
+document.getElementById('tblOrcamento').innerHTML = rows.map(r=>`
+<tr><td><span class="pill ${r.type}">${r.type}</span></td><td>${r.cat}</td>
+<td class="num"><input type="number" class="budget-input" value="${r.orc}" step="10" onchange="updateBudget('${r.cat}', this.value)"></td>
+<td class="num">${fmtBRL(r.real)}</td>
+<td class="num ${r.diff>=0?'pos':'neg'}">${fmtBRL(r.diff)}</td>
+<td><div class="ptrack" style="width:120px; display:inline-block; vertical-align:middle; margin-right:8px;"><div class="pfill ${r.pct>1?'over':''}" style="width:${Math.min(100,r.pct*100)}%"></div></div>${fmtPct(r.pct)}</td></tr>`).join('');
+}
+function updateBudget(cat, val){
+BUDGETS[cat] = Math.max(0, parseFloat(val)||0);
+renderOrcamento();
+if(document.getElementById('tab-dashboard').classList.contains('active')) renderDashboard();
+queueSave();
+}
+
+document.getElementById('compMesA').addEventListener('change', renderComparativo);
+document.getElementById('compMesB').addEventListener('change', renderComparativo);
+function renderComparativo(){
+const mA = document.getElementById('compMesA').value, mB = document.getElementById('compMesB').value;
+if(!mA||!mB) return;
+const listA = txForMonth(mA), listB = txForMonth(mB);
+document.getElementById('thMesA').textContent = monthLabel(mA);
+document.getElementById('thMesB').textContent = monthLabel(mB);
+
+function kpi(label, a, b, inverse){
+const d = a!==0 ? (b-a)/Math.abs(a) : 0;
+const good = inverse ? d<=0 : d>=0;
+return `<div class="card kpi"><div class="label">${label}</div><div class="value" style="font-size:20px;">${fmtBRL(b)}</div>
+<div class="delta ${good?'up':'down'}">${d>=0?'▲':'▼'} ${fmtPct(Math.abs(d))} vs ${monthLabel(mA)} (${fmtBRL(a)})</div></div>`;
+}
+const rA=sumBy(listA,'receita'), cA=sumBy(listA,'custo'), dA=sumBy(listA,'despesa');
+const rB=sumBy(listB,'receita'), cB=sumBy(listB,'custo'), dB=sumBy(listB,'despesa');
+document.getElementById('compKpis').innerHTML =
+kpi('Receitas', rA, rB, false) + kpi('Custos', cA, cB, true) + kpi('Despesas', dA, dB, true) + kpi('Resultado', rA-cA-dA, rB-cB-dB, false);
+
+const allCats = Object.keys(BUDGETS);
+killChart('comparativo');
+charts.comparativo = new Chart(document.getElementById('chartComparativo'), {
+type:'bar',
+data:{ labels: allCats, datasets:[
+{label:monthLabel(mA), backgroundColor:'#455910', data: allCats.map(c=>catTotalForMonthCat(listA,c))},
+{label:monthLabel(mB), backgroundColor:'#B5E338', data: allCats.map(c=>catTotalForMonthCat(listB,c))}
+]},
+options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{boxWidth:10,font:{size:11}}}}, scales:{x:{ticks:{maxRotation:45,minRotation:45,font:{size:10}}, grid:{display:false}}, y:{grid:{color:'#1c1e12'}}} }
+});
+
+document.getElementById('tblComparativo').innerHTML = allCats.map(c=>{
+const type = categoryType(c);
+const a = catTotalForMonthCat(listA,c), b = catTotalForMonthCat(listB,c);
+const varr = b-a, pct = a!==0 ? varr/Math.abs(a) : (b>0?1:0);
+return `<tr><td><span class="pill ${type}">${type}</span></td><td>${c}</td><td class="num">${fmtBRL(a)}</td><td class="num">${fmtBRL(b)}</td>
+<td class="num ${varr<=0?'pos':'neg'}">${fmtBRL(varr)}</td><td class="num ${varr<=0?'pos':'neg'}">${fmtPct(pct)}</td></tr>`;
+}).join('');
+}
+
+function generateCardInvoiceTx(cardName){
+const month = state.mesRef;
+const cur = txForMonth(month);
+const card = CARDS.find(c=>c.name===cardName);
+if(!card || !card.dueDay) { alert('Cartão sem dia de vencimento configurado.'); return; }
+
+const spent = cur.filter(t=>t.card===cardName).reduce((a,t)=>a+t.amount,0);
+if(spent <= 0){ alert('Não há compras registradas neste cartão para este mês.'); return; }
+
+const invStatus = getInvoiceStatus(cardName, month);
+if(invStatus.status === 'quitado'){ alert('A fatura deste cartão já está quitada neste mês.'); return; }
+
+const dueDayStr = String(card.dueDay).padStart(2,'0');
+const dueDate = `${month}-${dueDayStr}`;
+
+const body = `
+<div class="field full"><label class="field-label">Valor da Fatura</label><input type="text" class="full" value="${fmtBRL(spent)}" disabled></div>
+<div class="field full"><label class="field-label">Data de Quitação</label><input type="date" id="fmDataQuitacao" class="full" value="${dueDate}"></div>
+<div style="display:flex; gap:10px; margin-top:14px;">
+<button class="btn primary" id="fmConfirmQuitacao" style="flex:1;">Confirmar Pagamento da Fatura</button>
+</div>`;
+openModal(`Quitar Fatura · ${cardName}`, body);
+
+document.getElementById('fmConfirmQuitacao').addEventListener('click', ()=>{
+const paidDate = document.getElementById('fmDataQuitacao').value || dueDate;
+addTx(paidDate, 'despesa', 'Outros', 'Fatura Cartão', `Pagamento Fatura ${cardName}`, spent, 'Débito', cardName, ACCOUNTS[0]?.name||'', true);
+setInvoiceStatus(cardName, month, 'quitado', paidDate);
+closeModal();
+populateMonthSelects();
+renderAll();
+});
+}
+
+function reopenCardInvoice(cardName){
+const month = state.mesRef;
+if(!confirm(`Deseja reabrir a fatura de ${cardName} para ${monthLabel(month)}? O lançamento de pagamento gerado para este mês será removido.`)) return;
+transactions = transactions.filter(t => !(t.isBillPayment && t.card===cardName && t.month===month && t.description===`Pagamento Fatura ${cardName}`));
+setInvoiceStatus(cardName, month, 'aberto', null);
+populateMonthSelects();
+renderAll();
+}
+
+function renderCartoes(){
+const month = state.mesRef;
+const periodList = filterByPeriod(transactions, document.getElementById('kMes').value, document.getElementById('kMesFim').value, document.getElementById('kModoPeriodo').value);
+document.getElementById('cardsBox').innerHTML = CARDS.map((c,idx)=>{
+const isBeneficio = c.isBeneficio || c.type.includes('Alimentação') || c.type.includes('Benefício');
+
+// resumo por pessoa dos lançamentos deste cartão no período selecionado
+const porPessoaCartao = {};
+periodList.filter(t=>t.card===c.name && t.pessoa).forEach(t=>{
+if(!porPessoaCartao[t.pessoa]) porPessoaCartao[t.pessoa] = 0;
+porPessoaCartao[t.pessoa] += t.amount;
+});
+const resumoPessoaHtml = Object.keys(porPessoaCartao).length ? `
+<div style="margin-top:10px; padding-top:8px; border-top:1px dashed var(--border);">
+<div style="font-size:11px; color:var(--muted-2); margin-bottom:6px;">Gastos no período por pessoa / parente</div>
+${Object.keys(porPessoaCartao).sort((a,b)=>a.localeCompare(b,'pt-BR')).map(p=>`
+<div style="display:flex; justify-content:space-between; font-size:12px; padding:3px 0;"><span>${p}</span><b>${fmtBRL(porPessoaCartao[p])}</b></div>`).join('')}
+</div>` : '';
+
+if(isBeneficio){
+const currentBalance = getCardBalance(c.name);
+const txs = periodList.filter(t=>t.card===c.name).sort((a,b)=>b.date.localeCompare(a.date));
+const monthlySpent = periodList.filter(t=>t.card===c.name && t.type!=='receita').reduce((a,t)=>a+t.amount,0);
+
+return `<div class="card">
+<div class="card-tile">
+<div class="card-tile-head">
+<h4>${c.name}</h4>
+<div class="action-btns">
+<span class="type-pill" style="color:var(--olive-light); border-color:var(--olive-dark);">Benefício / Acumulativo</span>
+<button class="icon-btn" title="Editar" onclick="openCardForm(${idx})">✎</button>
+<button class="icon-btn danger" title="Excluir" onclick="deleteCard(${idx})">🗑</button>
+</div>
+</div>
+<div style="margin-top:10px;">
+<div style="font-size:11px; color:var(--muted-2);">Saldo Remanescente Acumulado</div>
+<div style="font-size:22px; font-weight:800; color:${currentBalance>=0?'var(--olive-light)':'var(--danger-light)'}; margin-top:2px;">
+${fmtBRL(currentBalance)}
+</div>
+<div style="font-size:11.5px; color:var(--muted); margin-top:6px;">
+Saldo Inicial / Carga: <b>${fmtBRL(c.initialBalance||0)}</b> · Gastos no Período: <b>${fmtBRL(monthlySpent)}</b>
+</div>
+${resumoPessoaHtml}
+</div>
+</div>
+<div class="table-scroll" style="max-height:220px;">
+<table><thead><tr><th style="width:28px;"><input type="checkbox" class="row-check sel-all-acc" title="Selecionar todos"></th><th>Data</th><th>Tipo</th><th>Descrição</th><th>Pessoa</th><th class="num">Valor</th></tr></thead>
+<tbody>${txs.length ? txs.map(t=>`<tr><td><input type="checkbox" class="row-check" data-id="${t.id}" ${selectedTx.has(t.id)?'checked':''}></td><td>${t.date.split('-').reverse().join('/')}</td><td><span class="pill ${t.type}">${t.type}</span></td><td>${t.description}${t.parcelaAtual?` <span class="badge-parcela">${t.parcelaAtual}/${t.parcelaTotal}</span>`:''}</td><td>${t.pessoa?`<span class="badge-pessoa">${t.pessoa}</span>`:''}</td><td class="num ${t.type==='receita'?'pos':''}">${fmtBRL(t.amount)}</td></tr>`).join('') : '<tr><td colspan="6" class="empty">Sem transações registradas neste cartão.</td></tr>'}</tbody></table>
+</div>
+</div>`;
+}
+
+const txs = periodList.filter(t=>t.card===c.name).sort((a,b)=>b.date.localeCompare(a.date));
+const spent = txs.reduce((a,t)=>a+t.amount,0);
+const limitUsage = c.limit ? spent/c.limit : null;
+const invStatus = getInvoiceStatus(c.name, month);
+
+let mLimitHtml = '';
+if(c.type === 'Crédito' && c.monthlyLimit){
+const mUsage = spent / c.monthlyLimit;
+const remaining = c.monthlyLimit - spent;
+let statusColor = 'var(--olive-light)';
+let statusText = `Restante mensal: ${fmtBRL(remaining)}`;
+let fillClass = '';
+
+if (remaining < 0) {
+statusColor = 'var(--danger-light)';
+statusText = `<b>ALERTA:</b> Limite ultrapassado em ${fmtBRL(Math.abs(remaining))}!`;
+fillClass = 'over';
+}
+
+mLimitHtml = `
+<div class="progress-row" style="margin-top:10px; border-top:1px dashed var(--border); padding-top:8px;">
+<div class="prow-top"><span>Meta de Gastos Mensal</span><b>${fmtBRL(spent)} / ${fmtBRL(c.monthlyLimit)}</b></div>
+<div class="ptrack"><div class="pfill ${fillClass}" style="width:${Math.min(100, mUsage*100)}%"></div></div>
+<div style="font-size:11px; color:${statusColor}; margin-top:4px;">${statusText}</div>
+</div>
+`;
+}
+
+const faturaStatusHtml = c.type==='Crédito' ? (
+invStatus.status === 'quitado'
+? `<span class="badge-quitado">✔ Quitada em ${invStatus.paidDate ? invStatus.paidDate.split('-').reverse().join('/') : '-'}</span> <button class="btn small" onclick="reopenCardInvoice('${c.name}')">Reabrir Fatura</button>`
+: `<span class="badge-aberto">Fatura Aberta</span> <button class="btn small" onclick="generateCardInvoiceTx('${c.name}')">Gerar Lançamento Fatura</button>`
+) : '';
+
+return `<div class="card">
+<div class="card-tile">
+<div class="card-tile-head">
+<h4>${c.name}</h4>
+<div class="action-btns">
+<span class="type-pill">${c.type}</span>
+<button class="icon-btn" title="Editar" onclick="openCardForm(${idx})">✎</button>
+<button class="icon-btn danger" title="Excluir" onclick="deleteCard(${idx})">🗑</button>
+</div>
+</div>
+${c.type==='Crédito' ? `
+${c.limit ? `
+<div class="progress-row">
+<div class="prow-top"><span>Limite Total</span><b>${fmtBRL(spent)} / ${fmtBRL(c.limit)}</b></div>
+<div class="ptrack"><div class="pfill ${limitUsage>0.9?'over':''}" style="width:${Math.min(100,limitUsage*100)}%"></div></div>
+</div>
+` : ''}
+${mLimitHtml}
+<div style="font-size:11.5px; color:var(--muted-2); margin-top:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+<span>Fecha dia ${c.closingDay||'-'} · Vencimento <b>${c.dueDay||'-'}</b></span>
+${faturaStatusHtml}
+</div>
+${resumoPessoaHtml}
+` : `<div style="font-size:12.5px; color:var(--muted);">Total debitado: <b style="color:var(--white)">${fmtBRL(spent)}</b></div>${resumoPessoaHtml}`}
+</div>
+<div class="table-scroll" style="max-height:220px;">
+<table><thead><tr><th style="width:28px;"><input type="checkbox" class="row-check sel-all-acc" title="Selecionar todos"></th><th>Data</th><th>Descrição</th><th>Categoria</th><th>Pessoa</th><th class="num">Valor</th></tr></thead>
+<tbody>${txs.length ? txs.map(t=>`<tr><td><input type="checkbox" class="row-check" data-id="${t.id}" ${selectedTx.has(t.id)?'checked':''}></td><td>${t.date.split('-').reverse().join('/')}</td><td>${t.description}${t.parcelaAtual?` <span class="badge-parcela">${t.parcelaAtual}/${t.parcelaTotal}</span>`:''}</td><td>${t.category}</td><td>${t.pessoa?`<span class="badge-pessoa">${t.pessoa}</span>`:''}</td><td class="num">${fmtBRL(t.amount)}</td></tr>`).join('') : '<tr><td colspan="6" class="empty">Sem transações no período.</td></tr>'}</tbody></table>
+</div>
+</div>`;
+}).join('');
+refreshSelectionUI();
+}
+
+function renderInvestimentos(){
+const idx = MONTHS.indexOf(state.mesRef);
+const totInvestido = INVESTMENTS.reduce((a,i)=>a+i.valorInvestido,0);
+const totAtual = INVESTMENTS.reduce((a,i)=>a+i.valorAtual,0);
+const rent = totInvestido? (totAtual-totInvestido)/totInvestido : 0;
+const window12 = MONTHS.slice(Math.max(0,idx-11), idx+1);
+const curEvo = investmentEvolution[idx] ? investmentEvolution[idx].total : totalInvestido;
+const prevEvo = investmentEvolution[idx-11] ? investmentEvolution[idx-11].total : investmentEvolution[0].total;
+const aporteMedio = (curEvo - prevEvo) / Math.min(12, idx+1);
+
+document.getElementById('investKpis').innerHTML = `
+<div class="card kpi"><div class="label">Total Investido (aporte)</div><div class="value">${fmtBRL(totInvestido)}</div></div>
+<div class="card kpi"><div class="label">Valor Atual da Carteira</div><div class="value">${fmtBRL(totAtual)}</div></div>
+<div class="card kpi"><div class="label">Rentabilidade Acumulada</div><div class="value" style="color:${rent>=0?'var(--olive-light)':'var(--danger-light)'}">${fmtPct(rent)}</div></div>
+<div class="card kpi"><div class="label">Aporte Médio Mensal (12m)</div><div class="value">${fmtBRL(aporteMedio>0?aporteMedio:0)}</div></div>
+`;
+
+killChart('investEvo');
+charts.investEvo = new Chart(document.getElementById('chartInvestEvo'), {
+type:'line',
+data:{ labels: window12.map(monthLabel), datasets:[{label:'Patrimônio investido', data: window12.map(m=>{ const e = investmentEvolution.find(x=>x.month===m); return e?e.total:null; }), borderColor:'#B5E338', backgroundColor:'rgba(181,227,56,0.15)', fill:true, tension:.3, pointRadius:2}] },
+options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{grid:{color:'#1c1e12'}, ticks:{callback:v=>'R$ '+(v/1000)+'k'}}, x:{grid:{display:false}}} }
+});
+
+const byType = {}; INVESTMENTS.forEach(i=>{byType[i.tipo]=(byType[i.tipo]||0)+i.valorAtual;});
+killChart('investAlloc');
+charts.investAlloc = new Chart(document.getElementById('chartInvestAlloc'), {
+type:'doughnut',
+data:{ labels:Object.keys(byType), datasets:[{data:Object.values(byType), backgroundColor:CHART_COLORS, borderColor:'#0e0f0a', borderWidth:2}] },
+options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right', labels:{boxWidth:10,font:{size:10.5}}}} }
+});
+
+document.getElementById('tblInvest').innerHTML = INVESTMENTS.map((i,idx)=>{
+const r = i.valorInvestido ? (i.valorAtual-i.valorInvestido)/i.valorInvestido : 0;
+return `<tr><td>${i.nome}</td><td>${i.tipo}</td><td class="num">${fmtBRL(i.valorInvestido)}</td><td class="num">${fmtBRL(i.valorAtual)}</td><td class="num ${r>=0?'pos':'neg'}">${fmtPct(r)}</td>
+<td><div class="action-btns"><button class="icon-btn" title="Editar" onclick="openInvestForm(${idx})">✎</button><button class="icon-btn danger" title="Excluir" onclick="deleteInvest(${idx})">🗑</button></div></td></tr>`;
+}).join('');
+document.getElementById('totInvestido').textContent = fmtBRL(totInvestido);
+document.getElementById('totAtual').textContent = fmtBRL(totAtual);
+document.getElementById('totRent').textContent = fmtPct(rent);
+}
+
+function renderMetas(){
+document.getElementById('goalsBox').innerHTML = GOALS.map((g,idx)=>{
+const pct = Math.min(1, g.atual/g.alvo);
+const restante = g.alvo - g.atual;
+const hoje = new Date(); const alvo = new Date(g.prazo+'-01');
+const mesesRestantes = Math.max(1, (alvo.getFullYear()-hoje.getFullYear())*12 + (alvo.getMonth()-hoje.getMonth()));
+const aporteSugerido = restante/mesesRestantes;
+return `<div class="goal-card">
+<div style="display:flex; justify-content:space-between; align-items:flex-start;">
+<h4>${g.nome}</h4>
+<div class="action-btns"><button class="icon-btn" title="Editar" onclick="openGoalForm(${idx})">✎</button><button class="icon-btn danger" title="Excluir" onclick="deleteGoal(${idx})">🗑</button></div>
+</div>
+<div class="meta">Categoria: ${g.categoria} · Prazo: ${monthLabel(g.prazo)}</div>
+<div class="ptrack"><div class="pfill" style="width:${pct*100}%"></div></div>
+<div class="amounts"><span>${fmtBRL(g.atual)} acumulado</span><span>${fmtPct(pct)}</span><span>Meta: ${fmtBRL(g.alvo)}</span></div>
+<div style="margin-top:10px; font-size:11.5px; color:var(--muted-2);">Faltam ${fmtBRL(restante)} · aporte sugerido de ${fmtBRL(aporteSugerido>0?aporteSugerido:0)}/mês</div>
+</div>`;
+}).join('');
+}
+
+document.getElementById('drePeriodo').addEventListener('change', renderDre);
+function renderDre(){
+const periodo = document.getElementById('drePeriodo').value;
+const month = state.mesRef;
+let list, label;
+if(periodo==='mes'){ list = txForMonth(month); label = monthLabel(month); }
+else if(periodo==='ano'){ const year = month.split('-')[0]; list = transactions.filter(t=>t.month.startsWith(year) && !t.isBillPayment); label='Ano '+year; }
+else { list = transactions.filter(t=>!t.isBillPayment); label = monthLabel(MONTHS[0])+' a '+monthLabel(MONTHS[MONTHS.length-1]); }
+document.getElementById('dreLabel').textContent = label;
+
+const receita = sumBy(list,'receita');
+const custosByCat = categoryTotals(list,'custo');
+const custoTotal = Object.values(custosByCat).reduce((a,b)=>a+b,0);
+const resultadoBruto = receita - custoTotal;
+const despesasByCat = categoryTotals(list,'despesa');
+const despesaTotal = Object.values(despesasByCat).reduce((a,b)=>a+b,0);
+const resultadoLiquido = resultadoBruto - despesaTotal;
+const margemBruta = receita? resultadoBruto/receita : 0;
+const margemLiquida = receita? resultadoLiquido/receita : 0;
+
+let rows = '';
+rows += `<tr class="total"><td class="dre-label">(+) Receita Bruta</td><td class="num">${fmtBRL(receita)}</td><td></td></tr>`;
+Object.entries(categoryTotals(list,'receita')).forEach(([c,v])=> rows += `<tr class="sub"><td class="dre-label">&nbsp;&nbsp;${c}</td><td class="num">${fmtBRL(v)}</td><td></td></tr>`);
+rows += `<tr class="neg-row"><td class="dre-label">(–) Custos Fixos & Operacionais</td><td class="num">${fmtBRL(-custoTotal)}</td><td></td></tr>`;
+Object.entries(custosByCat).forEach(([c,v])=> rows += `<tr class="sub neg-row"><td class="dre-label">&nbsp;&nbsp;${c}</td><td class="num">${fmtBRL(-v)}</td><td></td></tr>`);
+rows += `<tr class="total"><td class="dre-label">(=) Resultado Bruto Essencial</td><td class="num">${fmtBRL(resultadoBruto)}</td><td class="num">${fmtPct(margemBruta)} margem</td></tr>`;
+rows += `<tr class="neg-row"><td class="dre-label">(–) Despesas Pessoais / Estilo de Vida</td><td class="num">${fmtBRL(-despesaTotal)}</td><td></td></tr>`;
+Object.entries(despesasByCat).forEach(([c,v])=> rows += `<tr class="sub neg-row"><td class="dre-label">&nbsp;&nbsp;${c}</td><td class="num">${fmtBRL(-v)}</td><td></td></tr>`);
+rows += `<tr class="total"><td class="dre-label">(=) Capacidade Liquida de Aporte</td><td class="num">${fmtBRL(resultadoLiquido)}</td><td class="num">${fmtPct(margemLiquida)} margem</td></tr>`;
+document.getElementById('tblDre').innerHTML = rows;
+}
+
+function renderBalanco(){
+const month = state.mesRef;
+const cur = txForMonth(month);
+document.getElementById('bpLabel').textContent = 'posição em '+monthLabel(month);
+const invAtual = INVESTMENTS.reduce((a,i)=>a+i.valorAtual,0);
+const faturaAberta = cur.filter(t=>t.method==='Crédito').reduce((a,t)=>a+t.amount,0);
+const reservaGoal = GOALS.find(g=>g.nome.includes('Reserva'));
+const reservaEmergencia = reservaGoal ? reservaGoal.atual : 0;
+
+const totalSaldosBancarios = ACCOUNTS.reduce((a,acc) => a + getAccountBalance(acc.name), 0);
+const totalSaldosBeneficios = CARDS.filter(c => c.isBeneficio || c.type.includes('Alimentação') || c.type.includes('Benefício')).reduce((a,c) => a + getCardBalance(c.name), 0);
+
+const ativoCirc = [
+{n:'Saldo em Contas Bancárias', v:totalSaldosBancarios},
+{n:'Saldo Cartões Benefício / Alimentação', v:totalSaldosBeneficios},
+{n:'Reserva de Emergência', v:reservaEmergencia}
+];
+const ativoNCirc = [ {n:'Investimentos (Renda Fixa/Var)', v:invAtual}, {n:'Veículo', v:35000} ];
+const passivoCirc = [ {n:'Fatura de Cartão de Crédito', v:faturaAberta}, {n:'Contas a Pagar', v:800} ];
+const passivoNCirc = [ {n:'Financiamentos', v:11500} ];
+
+const totalAtivoCirc = ativoCirc.reduce((a,x)=>a+x.v,0);
+const totalAtivoNCirc = ativoNCirc.reduce((a,x)=>a+x.v,0);
+const totalAtivo = totalAtivoCirc+totalAtivoNCirc;
+const totalPassivoCirc = passivoCirc.reduce((a,x)=>a+x.v,0);
+const totalPassivoNCirc = passivoNCirc.reduce((a,x)=>a+x.v,0);
+const totalPassivo = totalPassivoCirc+totalPassivoNCirc;
+const patrimonioLiquido = totalAtivo - totalPassivo;
+
+document.getElementById('bpAtivo').innerHTML = `
+<div style="font-size:11.5px; color:var(--muted-2); margin:8px 0 4px;">Circulante</div>
+${ativoCirc.map(x=>`<div class="bp-line"><span>${x.n}</span><span>${fmtBRL(x.v)}</span></div>`).join('')}
+<div class="bp-line subtotal"><span>Total Circulante</span><span>${fmtBRL(totalAtivoCirc)}</span></div>
+<div style="font-size:11.5px; color:var(--muted-2); margin:14px 0 4px;">Não Circulante</div>
+${ativoNCirc.map(x=>`<div class="bp-line"><span>${x.n}</span><span>${fmtBRL(x.v)}</span></div>`).join('')}
+<div class="bp-line subtotal"><span>Total Não Circulante</span><span>${fmtBRL(totalAtivoNCirc)}</span></div>
+<div class="bp-line grandtotal"><span>TOTAL DO ATIVO</span><span>${fmtBRL(totalAtivo)}</span></div>
+`;
+document.getElementById('bpPassivo').innerHTML = `
+<div style="font-size:11.5px; color:var(--muted-2); margin:8px 0 4px;">Circulante</div>
+${passivoCirc.map(x=>`<div class="bp-line"><span>${x.n}</span><span>${fmtBRL(x.v)}</span></div>`).join('')}
+<div class="bp-line subtotal"><span>Total Circulante</span><span>${fmtBRL(totalPassivoCirc)}</span></div>
+<div style="font-size:11.5px; color:var(--muted-2); margin:14px 0 4px;">Não Circulante</div>
+${passivoNCirc.map(x=>`<div class="bp-line"><span>${x.n}</span><span>${fmtBRL(x.v)}</span></div>`).join('')}
+<div class="bp-line subtotal"><span>Total Não Circulante</span><span>${fmtBRL(totalPassivoNCirc)}</span></div>
+<div style="font-size:11.5px; color:var(--muted-2); margin:14px 0 4px;">Patrimônio Líquido</div>
+<div class="bp-line"><span>Patrimônio Líquido Acumulado</span><span>${fmtBRL(patrimonioLiquido)}</span></div>
+<div class="bp-line grandtotal"><span>TOTAL PASSIVO + PL</span><span>${fmtBRL(totalPassivo+patrimonioLiquido)}</span></div>
+`;
+}
+
+/* ============================= MODAIS E CONTROLES ============================= */
+function openModal(title, bodyHtml){
+document.getElementById('modalTitle').textContent = title;
+document.getElementById('modalBody').innerHTML = bodyHtml;
+document.getElementById('modalOverlay').style.display = 'flex';
+}
+function closeModal(){ document.getElementById('modalOverlay').style.display = 'none'; }
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalOverlay').addEventListener('click', e=>{ if(e.target.id==='modalOverlay') closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+function txCategoryOptions(type, selectedCat){
+const pool = CATEGORIES[type] || {};
+return Object.keys(pool).map(c=>`<option value="${c}" ${c===selectedCat?'selected':''}>${c}</option>`).join('');
+}
+function txSubcategoryOptions(type, cat, selectedSub){
+const pool = (CATEGORIES[type]||{})[cat] || [];
+return pool.map(s=>`<option value="${s}" ${s===selectedSub?'selected':''}>${s}</option>`).join('');
+}
+
+function openTxForm(id, defaultAccount = ''){
+const editing = id!=null;
+const t = editing ? transactions.find(x=>x.id===id) : {date: state.mesRef+'-'+String(new Date().getDate()).padStart(2,'0'), type:'despesa', category:Object.keys(CATEGORIES.despesa)[0], subcategory:'', description:'', amount:'', method:'Débito', card:'', account: defaultAccount, pessoa:''};
+
+const pessoasExistentes = listaPessoas();
+const datalistPessoas = `<datalist id="dlPessoas">${pessoasExistentes.map(p=>`<option value="${p}">`).join('')}</datalist>`;
+
+const body = `
+<div class="field full"><label class="field-label">Data</label><input type="date" id="fmDate" class="full" value="${t.date}"></div>
+<div class="field full"><label class="field-label">Tipo</label><select id="fmType" class="full">
+<option value="receita" ${t.type==='receita'?'selected':''}>Receita</option>
+<option value="custo" ${t.type==='custo'?'selected':''}>Custo</option>
+<option value="despesa" ${t.type==='despesa'?'selected':''}>Despesa</option></select></div>
+<div class="field full"><label class="field-label">Categoria</label><select id="fmCat" class="full">${txCategoryOptions(t.type, t.category)}</select></div>
+<div class="field full"><label class="field-label">Subcategoria</label><select id="fmSub" class="full">${txSubcategoryOptions(t.type, t.category, t.subcategory)}</select></div>
+<div class="field full"><label class="field-label">Descrição</label><input type="text" id="fmDesc" class="full" value="${(t.description||'').replace(/"/g,'&quot;')}" placeholder="ex: Compra mercado"></div>
+<div class="field full"><label class="field-label">Valor (R$)</label><input type="number" id="fmAmount" class="full" step="0.01" min="0" value="${t.amount}"></div>
+<div class="field full"><label class="field-label">Pessoa / Parente vinculado (opcional)</label><input type="text" id="fmPessoa" class="full" list="dlPessoas" value="${(t.pessoa||'').replace(/"/g,'&quot;')}" placeholder="ex: Mãe, João, Irmã...">${datalistPessoas}</div>
+
+${!editing ? `
+<div class="field full">
+<label class="field-label">Modalidade de Repetição</label>
+<select id="fmRepeatType" class="full">
+<option value="single">Lançamento Único</option>
+<option value="recurrent">Recorrente (mensal)</option>
+<option value="installment">Parcelado</option>
+</select>
+</div>
+<div class="field full" id="groupRepeatCount" style="display:none;">
+<label class="field-label" id="labelRepeatCount">Número de Meses / Parcelas</label>
+<input type="number" id="fmRepeatCount" class="full" min="2" max="60" value="2">
+</div>
+` : ''}
+
+<div class="field full"><label class="field-label">Forma de Pagamento</label><select id="fmMethod" class="full">
+${['Débito','Crédito','Pix','Cartão Benefício','Dinheiro','Transferência'].map(m=>`<option ${t.method===m?'selected':''}>${m}</option>`).join('')}</select></div>
+<div class="field full"><label class="field-label">Conta Bancária Origem/Destino (opcional)</label><select id="fmAccount" class="full"><option value="">Nenhuma</option>${ACCOUNTS.map(a=>`<option ${t.account===a.name?'selected':''}>${a.name}</option>`).join('')}</select></div>
+<div class="field full"><label class="field-label">Cartão (opcional)</label><select id="fmCard" class="full"><option value="">Nenhum</option>${CARDS.map(c=>`<option ${t.card===c.name?'selected':''}>${c.name}</option>`).join('')}</select></div>
+<div style="display:flex; gap:10px; margin-top:14px;">
+<button class="btn primary" id="fmSave" style="flex:1;">${editing?'Salvar Alterações':'Adicionar Lançamento'}</button>
+${editing?'<button class="btn" id="fmDelete" style="color:var(--danger-light);">Excluir</button>':''}
+</div>`;
+
+openModal(editing?'Editar Lançamento':'Novo Lançamento', body);
+
+if(!editing){
+const repeatSelect = document.getElementById('fmRepeatType');
+const groupCount = document.getElementById('groupRepeatCount');
+const labelCount = document.getElementById('labelRepeatCount');
+
+repeatSelect.addEventListener('change', ()=>{
+const val = repeatSelect.value;
+if(val === 'single'){
+groupCount.style.display = 'none';
+} else {
+groupCount.style.display = 'block';
+labelCount.textContent = val === 'recurrent' ? 'Meses de Recorrência' : 'Número de Parcelas';
+}
+});
+}
+
+document.getElementById('fmType').addEventListener('change', ()=>{
+document.getElementById('fmCat').innerHTML = txCategoryOptions(document.getElementById('fmType').value);
+document.getElementById('fmSub').innerHTML = txSubcategoryOptions(document.getElementById('fmType').value, document.getElementById('fmCat').value);
+});
+document.getElementById('fmCat').addEventListener('change', ()=>{
+document.getElementById('fmSub').innerHTML = txSubcategoryOptions(document.getElementById('fmType').value, document.getElementById('fmCat').value);
+});
+
+document.getElementById('fmSave').addEventListener('click', ()=>{
+const date = document.getElementById('fmDate').value;
+const type = document.getElementById('fmType').value;
+const category = document.getElementById('fmCat').value;
+const subcategory = document.getElementById('fmSub').value || 'Geral';
+const description = document.getElementById('fmDesc').value;
+const amount = parseFloat(document.getElementById('fmAmount').value)||0;
+const method = document.getElementById('fmMethod').value;
+const account = document.getElementById('fmAccount').value;
+const card = document.getElementById('fmCard').value;
+const pessoa = document.getElementById('fmPessoa').value.trim();
+
+if(!date || !amount){ alert('Preencha data e valor.'); return; }
+
+if(editing){
+Object.assign(t, {date, month:date.slice(0,7), type, category, subcategory, description, amount:Math.round(amount*100)/100, method, account, card, pessoa});
+} else {
+const repeatType = document.getElementById('fmRepeatType').value;
+const count = parseInt(document.getElementById('fmRepeatCount').value) || 1;
+
+if(repeatType === 'recurrent' && count > 1){
+const grupoId = 'rec_'+Date.now()+'_'+idCounter;
+for(let i = 0; i < count; i++){
+const nextDate = invoiceDateForPurchase(card, addMonthsToDate(date, i));
+addTx(nextDate, type, category, subcategory, `${description} (Recorrente ${i+1}/${count})`, amount, method, card, account, false, {pessoa, parcelaAtual:i+1, parcelaTotal:count, grupoParcelamento:grupoId});
+}
+} else if(repeatType === 'installment' && count > 1){
+const installmentAmount = Math.round((amount / count)*100)/100;
+const grupoId = 'parc_'+Date.now()+'_'+idCounter;
+for(let i = 0; i < count; i++){
+const nextDate = installmentInvoiceDate(card, date, i);
+addTx(nextDate, type, category, subcategory, `${description} (Parcela ${i+1}/${count})`, installmentAmount, method, card, account, false, {pessoa, parcelaAtual:i+1, parcelaTotal:count, grupoParcelamento:grupoId});
+}
+} else {
+addTx(date, type, category, subcategory, description, amount, method, card, account, false, {pessoa});
+}
+}
+closeModal();
+populateMonthSelects(); populateCategoryFilters(); renderAll();
+});
+
+if(editing){
+document.getElementById('fmDelete').addEventListener('click', ()=>{
+if(t.grupoParcelamento){
+if(confirm('Este lançamento faz parte de um parcelamento/recorrência. Deseja excluir também as demais parcelas futuras deste grupo? (Cancelar exclui apenas este lançamento)')){
+transactions = transactions.filter(x=> !(x.grupoParcelamento===t.grupoParcelamento && x.date>=t.date));
+} else {
+transactions = transactions.filter(x=>x.id!==id);
+}
+} else {
+if(!confirm('Excluir este lançamento?')) return;
+transactions = transactions.filter(x=>x.id!==id);
+}
+closeModal(); populateMonthSelects(); populateCategoryFilters(); renderAll();
+});
+}
+}
+
+function deleteTx(id){
+if(confirm('Excluir este lançamento?')){
+transactions = transactions.filter(x=>x.id!==id);
+populateMonthSelects(); populateCategoryFilters(); renderAll();
+}
+}
+document.getElementById('btnNovaTx').addEventListener('click', ()=>openTxForm(null));
+
+function openCardForm(idx){
+const editing = idx!=null;
+const c = editing ? CARDS[idx] : {name:'', type:'Crédito', limit:'', monthlyLimit:'', closingDay:'', dueDay:'', isBeneficio:false, initialBalance:0};
+const body = `
+<div class="field full"><label class="field-label">Nome do Cartão</label><input type="text" id="fmCardName" class="full" value="${(c.name||'').replace(/"/g,'&quot;')}" placeholder="ex: Nubank"></div>
+<div class="field full"><label class="field-label">Tipo</label><select id="fmCardType" class="full">
+<option value="Crédito" ${c.type==='Crédito'?'selected':''}>Crédito</option>
+<option value="Débito" ${c.type==='Débito'?'selected':''}>Débito</option>
+<option value="Alimentação / Benefício" ${c.isBeneficio || c.type.includes('Alimentação')?'selected':''}>Alimentação / Benefício (Acumulativo)</option>
+</select></div>
+
+<div id="cardCreditFields" style="${(c.isBeneficio || c.type.includes('Alimentação')) ? 'display:none;' : 'display:block;'}">
+<div class="field full"><label class="field-label">Limite Total (R$)</label><input type="number" id="fmCardLimit" class="full" value="${c.limit||''}"></div>
+<div class="field full"><label class="field-label">Limite Mensal Desejado (R$)</label><input type="number" id="fmCardMonthlyLimit" class="full" placeholder="ex: 2000" value="${c.monthlyLimit||''}"></div>
+<div class="field full"><label class="field-label">Dia Fechamento</label><input type="number" id="fmCardClose" class="full" min="1" max="31" value="${c.closingDay||''}"></div>
+<div class="field full"><label class="field-label">Dia Vencimento</label><input type="number" id="fmCardDue" class="full" min="1" max="31" value="${c.dueDay||''}"></div>
+</div>
+
+<div id="cardBeneficioFields" style="${(c.isBeneficio || c.type.includes('Alimentação')) ? 'display:block;' : 'display:none;'}">
+<div class="field full"><label class="field-label">Saldo Inicial / Remanescente Acumulado (R$)</label><input type="number" id="fmCardInitialBalance" class="full" step="0.01" value="${c.initialBalance||0}"></div>
+</div>
+
+<div style="display:flex; gap:10px; margin-top:14px;">
+<button class="btn primary" id="fmCardSave" style="flex:1;">${editing?'Salvar Alterações':'Adicionar Cartão'}</button>
+${editing?'<button class="btn" id="fmCardDelete" style="color:var(--danger-light);">Excluir</button>':''}
+</div>`;
+
+openModal(editing?'Editar Cartão':'Novo Cartão', body);
+
+document.getElementById('fmCardType').addEventListener('change', (e) => {
+const isBen = e.target.value.includes('Alimentação') || e.target.value.includes('Benefício');
+document.getElementById('cardCreditFields').style.display = isBen ? 'none' : 'block';
+document.getElementById('cardBeneficioFields').style.display = isBen ? 'block' : 'none';
+});
+
+document.getElementById('fmCardSave').addEventListener('click', ()=>{
+const name = document.getElementById('fmCardName').value.trim();
+const type = document.getElementById('fmCardType').value;
+const isBeneficio = type.includes('Alimentação') || type.includes('Benefício');
+const limit = parseFloat(document.getElementById('fmCardLimit').value) || null;
+const monthlyLimit = parseFloat(document.getElementById('fmCardMonthlyLimit').value) || null;
+const closingDay = parseInt(document.getElementById('fmCardClose').value) || null;
+const dueDay = parseInt(document.getElementById('fmCardDue').value) || null;
+const initialBalance = parseFloat(document.getElementById('fmCardInitialBalance').value) || 0;
+
+if(!name){ alert('Informe o nome do cartão.'); return; }
+
+const cardData = {name, type, limit, monthlyLimit, closingDay, dueDay, isBeneficio, initialBalance};
+
+if(editing) Object.assign(CARDS[idx], cardData);
+else CARDS.push(cardData);
+
+closeModal(); renderAll();
+});
+
+if(editing) document.getElementById('fmCardDelete').addEventListener('click', ()=>{
+if(confirm('Excluir este cartão?')){ CARDS.splice(idx,1); closeModal(); renderAll(); }
+});
+}
+
+function deleteCard(idx){
+if(confirm('Excluir cartão?')){ CARDS.splice(idx,1); renderAll(); }
+}
+document.getElementById('btnNovoCartao').addEventListener('click', ()=>openCardForm(null));
+
+function openInvestForm(idx){
+const editing = idx!=null;
+const inv = editing ? INVESTMENTS[idx] : {nome:'', tipo:'Renda Fixa', valorInvestido:'', valorAtual:''};
+const body = `
+<div class="field full"><label class="field-label">Nome do Ativo</label><input type="text" id="fmInvName" class="full" value="${(inv.nome||'').replace(/"/g,'&quot;')}" placeholder="ex: Tesouro Selic"></div>
+<div class="field full"><label class="field-label">Tipo</label><select id="fmInvType" class="full">${['Renda Fixa','Renda Variável','Previdência','Reserva de Emergência','Outros'].map(t=>`<option ${inv.tipo===t?'selected':''}>${t}</option>`).join('')}</select></div>
+<div class="field full"><label class="field-label">Valor Investido (R$)</label><input type="number" id="fmInvInvested" class="full" step="0.01" value="${inv.valorInvestido||''}"></div>
+<div class="field full"><label class="field-label">Valor Atual (R$)</label><input type="number" id="fmInvCurrent" class="full" step="0.01" value="${inv.valorAtual||''}"></div>
+<div style="display:flex; gap:10px; margin-top:14px;">
+<button class="btn primary" id="fmInvSave" style="flex:1;">${editing?'Salvar Alterações':'Adicionar Ativo'}</button>
+${editing?'<button class="btn" id="fmInvDelete" style="color:var(--danger-light);">Excluir</button>':''}
+</div>`;
+
+openModal(editing?'Editar Ativo':'Novo Ativo', body);
+
+document.getElementById('fmInvSave').addEventListener('click', ()=>{
+const nome = document.getElementById('fmInvName').value.trim();
+const tipo = document.getElementById('fmInvType').value;
+const valorInvestido = parseFloat(document.getElementById('fmInvInvested').value)||0;
+const valorAtual = parseFloat(document.getElementById('fmInvCurrent').value)||0;
+
+if(!nome){ alert('Informe o nome do ativo.'); return; }
+
+if(editing) Object.assign(INVESTMENTS[idx], {nome, tipo, valorInvestido, valorAtual});
+else INVESTMENTS.push({nome, tipo, valorInvestido, valorAtual});
+
+closeModal(); renderAll();
+});
+
+if(editing) document.getElementById('fmInvDelete').addEventListener('click', ()=>{
+if(confirm('Excluir ativo?')){ INVESTMENTS.splice(idx,1); closeModal(); renderAll(); }
+});
+}
+
+function deleteInvest(idx){
+if(confirm('Excluir ativo?')){ INVESTMENTS.splice(idx,1); renderAll(); }
+}
+document.getElementById('btnNovoInvest').addEventListener('click', ()=>openInvestForm(null));
+
+function openGoalForm(idx){
+const editing = idx!=null;
+const g = editing ? GOALS[idx] : {nome:'', alvo:'', atual:'', prazo:state.mesRef, categoria:'Patrimônio'};
+const body = `
+<div class="field full"><label class="field-label">Nome da Meta</label><input type="text" id="fmGoalName" class="full" value="${(g.nome||'').replace(/"/g,'&quot;')}" placeholder="ex: Viagem"></div>
+<div class="field full"><label class="field-label">Categoria</label><input type="text" id="fmGoalCat" class="full" value="${g.categoria||''}" placeholder="ex: Lazer, Patrimônio"></div>
+<div class="field full"><label class="field-label">Valor Alvo (R$)</label><input type="number" id="fmGoalTarget" class="full" step="0.01" value="${g.alvo||''}"></div>
+<div class="field full"><label class="field-label">Valor Acumulado Atual (R$)</label><input type="number" id="fmGoalCurrent" class="full" step="0.01" value="${g.atual||''}"></div>
+<div class="field full"><label class="field-label">Prazo (Mês/Ano)</label><input type="month" id="fmGoalDate" class="full" value="${g.prazo||state.mesRef}"></div>
+<div style="display:flex; gap:10px; margin-top:14px;">
+<button class="btn primary" id="fmGoalSave" style="flex:1;">${editing?'Salvar Alterações':'Adicionar Meta'}</button>
+${editing?'<button class="btn" id="fmGoalDelete" style="color:var(--danger-light);">Excluir</button>':''}
+</div>`;
+
+openModal(editing?'Editar Meta':'Nova Meta', body);
+
+document.getElementById('fmGoalSave').addEventListener('click', ()=>{
+const nome = document.getElementById('fmGoalName').value.trim();
+const categoria = document.getElementById('fmGoalCat').value.trim()||'Geral';
+const alvo = parseFloat(document.getElementById('fmGoalTarget').value)||0;
+const atual = parseFloat(document.getElementById('fmGoalCurrent').value)||0;
+const prazo = document.getElementById('fmGoalDate').value;
+
+if(!nome || !alvo){ alert('Preencha nome e valor alvo.'); return; }
+
+if(editing) Object.assign(GOALS[idx], {nome, categoria, alvo, atual, prazo});
+else GOALS.push({nome, categoria, alvo, atual, prazo});
+
+closeModal(); renderAll();
+});
+
+if(editing) document.getElementById('fmGoalDelete').addEventListener('click', ()=>{
+if(confirm('Excluir meta?')){ GOALS.splice(idx,1); closeModal(); renderAll(); }
+});
+}
+
+function deleteGoal(idx){
+if(confirm('Excluir meta?')){ GOALS.splice(idx,1); renderAll(); }
+}
+document.getElementById('btnNovaMeta').addEventListener('click', ()=>openGoalForm(null));
+
+/* ============================= IMPORT / EXPORT ============================= */
+function triggerImport(){ document.getElementById('fileInput').click(); }
+document.getElementById('btnImportTop').addEventListener('click', triggerImport);
+document.getElementById('btnImportBottom').addEventListener('click', triggerImport);
+
+document.getElementById('fileInput').addEventListener('change', e=>{
+const file = e.target.files[0];
+if(!file) return;
+const reader = new FileReader();
+reader.onload = (evt)=>{
+try {
+const data = new Uint8Array(evt.target.result);
+const workbook = XLSX.read(data, {type:'array', cellDates:true});
+const firstSheet = workbook.SheetNames[0];
+const rows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet], {defval:''});
+
+let added = 0;
+rows.forEach(r=>{
+let date = r.Data || r.data || r.DATE;
+if(date instanceof Date) date = date.toISOString().slice(0,10);
+else if(typeof date === 'string' && date.includes('/')){
+const parts = date.split('/');
+if(parts.length===3) date = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+}
+const type = (r.Tipo||r.tipo||'despesa').toLowerCase();
+const category = r.Categoria || r.categoria || 'Outros';
+const subcategory = r.Subcategoria || r.subcategoria || 'Geral';
+const description = r.Descrição || r.descricao || r.Descricao || 'Importado';
+const amount = parseFloat(r.Valor||r.valor||0);
+const method = r.FormaPagamento || r.Forma || r.forma || 'Outro';
+const card = r.Cartao || r.cartao || '';
+const account = r.Conta || r.conta || '';
+
+if(date && amount){
+addTx(date, type, category, subcategory, description, Math.abs(amount), method, card, account);
+added++;
+}
+});
+
+populateMonthSelects(); populateCategoryFilters(); renderAll();
+const status = `${added} lançamentos importados com sucesso!`;
+document.getElementById('importStatus').textContent = status;
+alert(status);
+} catch(err) {
+alert('Erro ao processar arquivo: '+err.message);
+}
+};
+reader.readAsArrayBuffer(file);
+});
+
+document.getElementById('btnExportTop').addEventListener('click', exportExcel);
+document.getElementById('expExcel').addEventListener('click', exportExcel);
+
+function exportExcel(){
+const wb = XLSX.utils.book_new();
+
+const txSheet = XLSX.utils.json_to_sheet(transactions.map(t=>({
+ID: t.id, Data: t.date, Mês: t.month, Tipo: t.type, Categoria: t.category,
+Subcategoria: t.subcategory, Descrição: t.description, Valor: t.amount,
+FormaPagamento: t.method, Conta: t.account, Cartão: t.card,
+Pessoa: t.pessoa||'', Parcela: t.parcelaAtual? `${t.parcelaAtual}/${t.parcelaTotal}` : ''
+})));
+XLSX.utils.book_append_sheet(wb, txSheet, "Transações");
+
+const invoiceRows = Object.keys(cardInvoices).map(k=>{
+const [cardName, mes] = k.split('|');
+const inv = cardInvoices[k];
+return {Cartão: cardName, Mês: mes, Status: inv.status==='quitado'?'Quitada':'Aberta', DataQuitação: inv.paidDate||''};
+});
+if(invoiceRows.length){
+const invSheetFat = XLSX.utils.json_to_sheet(invoiceRows);
+XLSX.utils.book_append_sheet(wb, invSheetFat, "Status Faturas");
+}
+
+const accSheet = XLSX.utils.json_to_sheet(ACCOUNTS.map(a=>({
+Nome: a.name, SaldoInicial: a.initialBalance, SaldoAtual: getAccountBalance(a.name)
+})));
+XLSX.utils.book_append_sheet(wb, accSheet, "Contas Bancárias");
+
+const cardSheet = XLSX.utils.json_to_sheet(CARDS.map(c=>({
+Nome: c.name, Tipo: c.type, LimiteTotal: c.limit, LimiteMensal: c.monthlyLimit,
+DiaFechamento: c.closingDay, DiaVencimento: c.dueDay, SaldoRemanescente: getCardBalance(c.name)
+})));
+XLSX.utils.book_append_sheet(wb, cardSheet, "Cartões");
+
+const invSheet = XLSX.utils.json_to_sheet(INVESTMENTS);
+XLSX.utils.book_append_sheet(wb, invSheet, "Investimentos");
+
+const goalSheet = XLSX.utils.json_to_sheet(GOALS);
+XLSX.utils.book_append_sheet(wb, goalSheet, "Metas");
+
+const abasSheet = XLSX.utils.json_to_sheet(ABASTECIMENTOS.map(a=>({
+Data: a.data, Posto: a.posto, KmInicial: a.kmIni, KmFinal: a.kmFim,
+Distancia: a.kmFim-a.kmIni, Litros: a.litros, Valor: a.valor,
+Consumo: ((a.kmFim-a.kmIni)>0 && a.litros>0) ? +(((a.kmFim-a.kmIni)/a.litros).toFixed(2)) : ''
+})));
+XLSX.utils.book_append_sheet(wb, abasSheet, "Abastecimentos");
+
+const manutSheet = XLSX.utils.json_to_sheet(MANUTENCOES.map(m=>({
+Data: m.data, Descricao: m.descricao, Km: m.km, Custo: m.custo, Origem: m.origem
+})));
+XLSX.utils.book_append_sheet(wb, manutSheet, "Manutenções");
+
+const alertSheet = XLSX.utils.json_to_sheet(MAINT_ALERTS.map(a=>({
+Item: a.nome, Tipo: a.tipo, IntervaloMeses: a.intervaloMeses, IntervaloKm: a.intervaloKm,
+UltimaRealizacao: a.ultimaRealizacao, KmNaRealizacao: a.kmNaRealizacao
+})));
+XLSX.utils.book_append_sheet(wb, alertSheet, "Alertas de Manutenção");
+
+XLSX.writeFile(wb, `financeiro_cfo_${state.mesRef}.xlsx`);
+}
+
+document.getElementById('expCsv').addEventListener('click', ()=>{
+const headers = "ID;Data;Mês;Tipo;Categoria;Subcategoria;Descrição;Valor;FormaPagamento;Conta;Cartão\n";
+const rows = transactions.map(t=> `${t.id};${t.date};${t.month};${t.type};${t.category};${t.subcategory};"${t.description.replace(/"/g,'""')}";${t.amount};${t.method};${t.account};${t.card}`).join("\n");
+const blob = new Blob([headers + rows], {type:'text/csv;charset=utf-8;'});
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a'); a.href=url; a.download=`transacoes_${state.mesRef}.csv`; a.click();
+});
+
+document.getElementById('expJson').addEventListener('click', ()=>{
+const data = { transactions, accounts: ACCOUNTS, cards: CARDS, investments: INVESTMENTS, goals: GOALS, budgets: BUDGETS, vehicle: VEHICLE, alertasManutencao: MAINT_ALERTS, abastecimentos: ABASTECIMENTOS, manutencoes: MANUTENCOES };
+const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a'); a.href=url; a.download=`backup_financeiro_${state.mesRef}.json`; a.click();
+});
+
+/* ============================= MANUTENÇÃO DE CARRO ============================= */
+let VEHICLE = { nome:'Meu Carro', modelo:'', ano:null, odometroAtual:0, tanqueLitros:null };
+let MAINT_ALERTS = [];
+let ABASTECIMENTOS = [];
+let MANUTENCOES = [];
+
+function saveCarData(){
+queueSave();
+}
+function seedCarData(){
+VEHICLE = { nome:'Meu Carro', modelo:'Hatch 1.0 Flex', ano:2021, odometroAtual:45200, tanqueLitros:45 };
+MAINT_ALERTS = [];
+ABASTECIMENTOS = [];
+MANUTENCOES = [];
+
+MAINT_ALERTS.push(
+{id:idCounter++, nome:'Troca de Óleo', tipo:'ambos', intervaloMeses:6, intervaloKm:5000, ultimaRealizacao:'2026-01-20', kmNaRealizacao:45320},
+{id:idCounter++, nome:'Filtro de Ar', tipo:'tempo', intervaloMeses:6, intervaloKm:0, ultimaRealizacao:'2026-02-10', kmNaRealizacao:null},
+{id:idCounter++, nome:'Filtro de Combustível', tipo:'km', intervaloMeses:0, intervaloKm:10000, ultimaRealizacao:'2025-08-05', kmNaRealizacao:36100},
+{id:idCounter++, nome:'Pneus (rodízio e calibragem)', tipo:'km', intervaloMeses:0, intervaloKm:10000, ultimaRealizacao:'2026-03-02', kmNaRealizacao:41300},
+{id:idCounter++, nome:'Pastilhas de Freio', tipo:'km', intervaloMeses:0, intervaloKm:20000, ultimaRealizacao:'2025-11-12', kmNaRealizacao:38850},
+{id:idCounter++, nome:'Bateria', tipo:'tempo', intervaloMeses:24, intervaloKm:0, ultimaRealizacao:'2025-04-15', kmNaRealizacao:null},
+{id:idCounter++, nome:'Correia Dentada', tipo:'km', intervaloMeses:0, intervaloKm:60000, ultimaRealizacao:'2023-03-10', kmNaRealizacao:18000}
+);
+
+let km = 45200;
+const inicio = new Date('2026-01-15');
+for(let i=0;i<14;i++){
+const dist = 480 + ((i*37)%240);
+const litros = 40 + ((i*3)%8);
+const d = new Date(inicio.getTime() + i*16*86400000);
+const data = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const kmIni = km;
+km += dist;
+const valor = Math.round(litros * (5.85 + (i%5)*0.12) * 100)/100;
+ABASTECIMENTOS.push({id:idCounter++, data, posto:'Posto Shell', kmIni, kmFim:km, litros, valor});
+}
+VEHICLE.odometroAtual = km;
+
+MANUTENCOES.push(
+{id:idCounter++, data:'2026-01-20', descricao:'Troca de Óleo + Filtro de Óleo', km:45320, custo:280, origem:'alerta', alertaId:MAINT_ALERTS[0].id},
+{id:idCounter++, data:'2026-03-02', descricao:'Rodízio e calibragem dos pneus', km:47000, custo:0, origem:'alerta', alertaId:MAINT_ALERTS[3].id},
+{id:idCounter++, data:'2026-05-10', descricao:'Troca dos 4 pneus', km:49500, custo:2350, origem:'manual', alertaId:null},
+{id:idCounter++, data:'2026-06-14', descricao:'Alinhamento e balanceamento', km:50300, custo:180, origem:'manual', alertaId:null}
+);
+saveCarData();
+}
+
+function todayStr(){
+const n = new Date();
+return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
+}
+function daysBetween(a,b){ return Math.round((new Date(b) - new Date(a))/86400000); }
+function currentOdometer(){
+let km = VEHICLE.odometroAtual || 0;
+ABASTECIMENTOS.forEach(a=>{ if(a.kmFim>km) km=a.kmFim; });
+MANUTENCOES.forEach(m=>{ if(m.km>km) km=m.km; });
+return km;
+}
+function alertStatus(a){
+const curKm = currentOdometer();
+const today = todayStr();
+const intM = a.intervaloMeses||0;
+const intKm = a.intervaloKm||0;
+let kmOver=false, kmWarn=false, kmPct=null, kmLeft=null, alvoKm=null;
+if(intKm>0 && a.kmNaRealizacao!=null){
+alvoKm = a.kmNaRealizacao + intKm;
+kmLeft = alvoKm - curKm;
+kmPct = (curKm - a.kmNaRealizacao)/intKm;
+kmOver = kmLeft<=0;
+kmWarn = kmLeft>0 && kmPct>=0.9;
+}
+let dateOver=false, dateWarn=false, datePct=null, daysLeft=null, alvoDate=null;
+if(intM>0 && a.ultimaRealizacao){
+alvoDate = addMonthsToDate(a.ultimaRealizacao, intM);
+daysLeft = daysBetween(today, alvoDate);
+const totalDays = daysBetween(a.ultimaRealizacao, alvoDate);
+datePct = totalDays>0 ? daysBetween(a.ultimaRealizacao, today)/totalDays : 1;
+dateOver = daysLeft<=0;
+dateWarn = daysLeft>0 && daysLeft<=30;
+}
+let status = 'ok';
+if(kmOver || dateOver) status = 'over';
+else if(kmWarn || dateWarn) status = 'warn';
+let pct;
+if(a.tipo==='km' && kmPct!=null) pct = kmPct;
+else if(a.tipo==='tempo' && datePct!=null) pct = datePct;
+else {
+const vals = [kmPct, datePct].filter(v=>v!=null);
+pct = vals.length ? Math.max(...vals) : 0;
+}
+return {status, pct:Math.min(1,Math.max(0,pct)), alvoKm, kmLeft, alvoDate, daysLeft, hasTempo: a.tipo!=='km', hasKm: a.tipo!=='tempo'};
+}
+function consumptionStats(){
+let totalKm=0, totalLitros=0, totalValor=0;
+const consumos = [];
+ABASTECIMENTOS.forEach(a=>{
+const dist = a.kmFim - a.kmIni;
+if(dist>0 && a.litros>0){ totalKm+=dist; totalLitros+=a.litros; consumos.push(dist/a.litros); }
+totalValor += a.valor||0;
+});
+const medio = totalLitros>0 ? totalKm/totalLitros : 0;
+const melhor = consumos.length ? Math.max(...consumos) : 0;
+const pior = consumos.length ? Math.min(...consumos) : 0;
+const precoMedio = totalLitros>0 ? totalValor/totalLitros : 0;
+return {medio, melhor, pior, precoMedio, totalKm, totalLitros, totalValor, consumos};
+}
+
+function renderVeiculo(){
+const kmAtual = currentOdometer();
+const stats = consumptionStats();
+const totalAbas = ABASTECIMENTOS.reduce((a,x)=>a+(x.valor||0),0);
+const totalMaint = MANUTENCOES.reduce((a,x)=>a+(x.custo||0),0);
+const alertsOver = MAINT_ALERTS.filter(a=>alertStatus(a).status==='over').length;
+const alertsWarn = MAINT_ALERTS.filter(a=>alertStatus(a).status==='warn').length;
+
+document.getElementById('veiKpis').innerHTML = `
+<div class="card kpi"><div class="label">Consumo médio</div><div class="value">${stats.medio>0?stats.medio.toFixed(2)+' km/L':'—'}</div><div class="delta">${ABASTECIMENTOS.length} abastecimentos registrados</div></div>
+<div class="card kpi"><div class="label">Odômetro atual</div><div class="value">${kmAtual.toLocaleString('pt-BR')} km</div><div class="delta">${VEHICLE.nome}</div></div>
+<div class="card kpi"><div class="label">Combustível (total)</div><div class="value">${fmtBRL(totalAbas)}</div><div class="delta">preço médio ${fmtBRL(stats.precoMedio)}/L</div></div>
+<div class="card kpi"><div class="label">Manutenção (total)</div><div class="value">${fmtBRL(totalMaint)}</div><div class="delta">${MANUTENCOES.length} serviços no histórico</div></div>
+<div class="card kpi"><div class="label">Alertas ativos</div><div class="value" style="color:${alertsOver?'var(--danger-light)':alertsWarn?'#FFCC00':'var(--olive-light)'}">${alertsOver+alertsWarn}</div><div class="delta">${alertsOver?alertsOver+' vencido(s)':alertsWarn?alertsWarn+' próximo(s)':'todos em dia'}</div></div>
+`;
+
+document.getElementById('veiInfo').innerHTML = `<div class="vei-summary">
+<span><b>${VEHICLE.nome}</b>${VEHICLE.modelo?' · '+VEHICLE.modelo:''}${VEHICLE.ano?' · '+VEHICLE.ano:''}</span>
+<span>Odômetro registrado: <b>${(VEHICLE.odometroAtual||0).toLocaleString('pt-BR')} km</b></span>
+<span>Tanque: <b>${VEHICLE.tanqueLitros||'-'} L</b></span>
+<span>Melhor consumo: <b>${stats.melhor>0?stats.melhor.toFixed(2)+' km/L':'—'}</b> · Pior: <b>${stats.pior>0?stats.pior.toFixed(2)+' km/L':'—'}</b></span>
+</div>`;
+
+document.getElementById('veiAlertas').innerHTML = MAINT_ALERTS.map(a=>{
+const s = alertStatus(a);
+const badge = s.status==='over' ? '<span class="pill despesa">Vencido</span>'
+: s.status==='warn' ? '<span class="pill" style="background:rgba(255,204,0,.15);color:#FFCC00;">Próximo</span>'
+: '<span class="pill receita">Em dia</span>';
+const next = [];
+if(s.hasKm) next.push(`próx. troca: <b>${s.alvoKm!=null?s.alvoKm.toLocaleString('pt-BR')+' km':'—'}</b> (${s.kmLeft!=null ? (s.kmLeft>0? s.kmLeft.toLocaleString('pt-BR')+' km restantes':'km excedido') : '—'})`);
+if(s.hasTempo) next.push(`próx. data: <b>${s.alvoDate? new Date(s.alvoDate).toLocaleDateString('pt-BR'):'—'}</b> (${s.daysLeft!=null ? (s.daysLeft>0? s.daysLeft+' dias':'data vencida') : '—'})`);
+const tipoLabel = a.tipo==='tempo'?'Por tempo':a.tipo==='km'?'Por quilometragem':'Tempo + km';
+return `<div class="alloc-box" style="margin-bottom:12px;">
+<div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+<div>
+<b>${a.nome}</b> <span class="type-pill" style="margin-left:6px;">${tipoLabel}</span>
+<div style="font-size:11.5px; color:var(--muted); margin-top:4px;">
+Intervalo: ${a.tipo!=='km'?a.intervaloMeses+' meses · ':''}${a.tipo!=='tempo'?(a.intervaloKm||0).toLocaleString('pt-BR')+' km · ':''}
+Última: ${a.ultimaRealizacao? new Date(a.ultimaRealizacao).toLocaleDateString('pt-BR')+' @ '+(a.kmNaRealizacao!=null?a.kmNaRealizacao.toLocaleString('pt-BR')+' km':'data'):'nunca'}
+</div>
+</div>
+<div style="text-align:right;">${badge}<div style="margin-top:5px; font-size:11px; color:var(--muted);">${next.join('<br>')}</div></div>
+</div>
+<div class="ptrack" style="margin-top:10px;"><div class="pfill ${s.status==='over'?'over':s.status==='warn'?'warn':''}" style="width:${Math.round(s.pct*100)}%"></div></div>
+<div style="display:flex; gap:8px; margin-top:10px; justify-content:flex-end;">
+<button class="btn small primary" onclick="registerAlertDone(${a.id})">Registrar Realização</button>
+<button class="btn small" onclick="openAlertForm(${a.id})">✎ Editar</button>
+<button class="btn small danger" onclick="deleteAlert(${a.id})">Excluir</button>
+</div>
+</div>`;
+}).join('') || '<div class="empty">Nenhum alerta configurado. Clique em "+ Novo Alerta".</div>';
+
+renderVeiculoCharts();
+renderAbastecimentos();
+renderManutencoes();
+}
+
+function renderVeiculoCharts(){
+const ordered = ABASTECIMENTOS.slice().sort((a,b)=>a.data.localeCompare(b.data));
+const stats = consumptionStats();
+document.getElementById('tagConsumoStats').textContent = stats.medio>0 ? `média ${stats.medio.toFixed(2)} · melhor ${stats.melhor.toFixed(2)} · pior ${stats.pior.toFixed(2)} km/L` : 'sem dados';
+const labels = ordered.map(a=>{ const p=a.data.split('-'); return p[2]+'/'+p[1]; });
+const consumos = ordered.map(a=>{ const d=a.kmFim-a.kmIni; return d>0&&a.litros>0 ? Math.round(d/a.litros*100)/100 : null; });
+killChart('consumo');
+chartDefaults();
+charts.consumo = new Chart(document.getElementById('chartConsumo'), {
+type:'line',
+data:{ labels, datasets:[{label:'km/L', data:consumos, borderColor:'#B5E338', backgroundColor:'rgba(181,227,56,0.15)', fill:true, tension:.3, pointRadius:3, spanGaps:true}] },
+options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ y:{grid:{color:'#1c1e12'}}, x:{grid:{display:false}} } }
+});
+
+const byCat = {};
+MANUTENCOES.forEach(m=>{ if(!(m.custo>0)) return; const k = m.descricao||'Manutenção'; byCat[k]=(byCat[k]||0)+m.custo; });
+const keys = Object.keys(byCat).sort((a,b)=>byCat[b]-byCat[a]);
+killChart('maint');
+charts.maint = new Chart(document.getElementById('chartMaint'), {
+type:'bar',
+data:{ labels: keys, datasets:[{label:'Gastos', data: keys.map(k=>byCat[k]), backgroundColor:CHART_COLORS, borderColor:'#0e0f0a', borderWidth:1}] },
+options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{grid:{color:'#1c1e12'}, ticks:{callback:v=>'R$ '+(v/1000)+'k'}}, y:{grid:{display:false}, ticks:{font:{size:10}}} } }
+});
+}
+
+function renderAbastecimentos(){
+const list = ABASTECIMENTOS.slice().sort((a,b)=>b.data.localeCompare(a.data));
+const stats = consumptionStats();
+document.getElementById('veiAbasTag').textContent = list.length+' registros';
+document.getElementById('tblAbastecimentos').innerHTML = list.map(a=>{
+const dist = a.kmFim - a.kmIni;
+const cons = dist>0 && a.litros>0 ? dist/a.litros : 0;
+const pl = a.litros>0 ? (a.valor||0)/a.litros : 0;
+return `<tr>
+<td>${a.data.split('-').reverse().join('/')}</td>
+<td>${a.posto||'—'}</td>
+<td class="num">${a.kmIni.toLocaleString('pt-BR')}</td>
+<td class="num">${a.kmFim.toLocaleString('pt-BR')}</td>
+<td class="num">${dist.toLocaleString('pt-BR')}</td>
+<td class="num">${a.litros.toLocaleString('pt-BR',{maximumFractionDigits:2})}</td>
+<td class="num">${fmtBRL(a.valor)}</td>
+<td class="num" style="color:${cons>0?'var(--olive-light)':'var(--muted)'}">${cons>0?cons.toFixed(2):'—'}</td>
+<td class="num">${fmtBRL(pl)}</td>
+<td><div class="action-btns"><button class="icon-btn" title="Editar" onclick="openAbastecimentoForm(${a.id})">✎</button><button class="icon-btn danger" title="Excluir" onclick="deleteAbastecimento(${a.id})">✕</button></div></td>
+</tr>`;
+}).join('') || '<tr><td colspan="10" class="empty">Nenhum abastecimento registrado.</td></tr>';
+document.getElementById('totDist').textContent = stats.totalKm.toLocaleString('pt-BR')+' km';
+document.getElementById('totLitros').textContent = stats.totalLitros.toLocaleString('pt-BR',{maximumFractionDigits:1})+' L';
+document.getElementById('totValorAbas').textContent = fmtBRL(stats.totalValor);
+document.getElementById('totConsumo').textContent = stats.medio>0?stats.medio.toFixed(2)+' km/L':'—';
+}
+
+function renderManutencoes(){
+const list = MANUTENCOES.slice().sort((a,b)=>b.data.localeCompare(a.data));
+const total = MANUTENCOES.reduce((a,m)=>a+(m.custo||0),0);
+document.getElementById('veiMaintTag').textContent = list.length+' serviços';
+document.getElementById('tblManutencoes').innerHTML = list.map(m=>`
+<tr>
+<td>${m.data.split('-').reverse().join('/')}</td>
+<td>${m.descricao}</td>
+<td class="num">${(m.km||0).toLocaleString('pt-BR')}</td>
+<td class="num">${fmtBRL(m.custo||0)}</td>
+<td>${m.origem==='alerta'?'<span class="pill receita">Alerta</span>':'<span class="type-pill">Manual</span>'}</td>
+<td><div class="action-btns"><button class="icon-btn" title="Editar" onclick="openManutencaoForm(${m.id})">✎</button><button class="icon-btn danger" title="Excluir" onclick="deleteManutencao(${m.id})">✕</button></div></td>
+</tr>`).join('') || '<tr><td colspan="6" class="empty">Nenhuma manutenção registrada.</td></tr>';
+document.getElementById('totMaint').textContent = fmtBRL(total);
+}
+
+function openVehicleForm(){
+const body = `
+<div class="field full"><label class="field-label">Nome</label><input type="text" id="fmVhNome" class="full" value="${(VEHICLE.nome||'').replace(/"/g,'&quot;')}"></div>
+<div class="field full"><label class="field-label">Modelo</label><input type="text" id="fmVhModelo" class="full" value="${(VEHICLE.modelo||'').replace(/"/g,'&quot;')}" placeholder="ex: Hatch 1.0 Flex"></div>
+<div class="field full"><label class="field-label">Ano</label><input type="number" id="fmVhAno" class="full" min="1990" max="2035" value="${VEHICLE.ano||''}"></div>
+<div class="field full"><label class="field-label">Odômetro atual</label><input type="number" id="fmVhKm" class="full" min="0" step="1" value="${VEHICLE.odometroAtual||0}"></div>
+<div class="field full"><label class="field-label">Capacidade do tanque (L)</label><input type="number" id="fmVhTanque" class="full" min="1" value="${VEHICLE.tanqueLitros||''}"></div>
+<div style="display:flex; gap:10px; margin-top:14px;"><button class="btn primary" id="fmVhSave" style="flex:1;">Salvar</button></div>`;
+openModal('Configuração do Veículo', body);
+document.getElementById('fmVhSave').addEventListener('click', ()=>{
+VEHICLE.nome = document.getElementById('fmVhNome').value.trim()||'Meu Carro';
+VEHICLE.modelo = document.getElementById('fmVhModelo').value.trim();
+VEHICLE.ano = parseInt(document.getElementById('fmVhAno').value)||null;
+VEHICLE.odometroAtual = Math.max(0, parseFloat(document.getElementById('fmVhKm').value)||0);
+VEHICLE.tanqueLitros = parseFloat(document.getElementById('fmVhTanque').value)||null;
+closeModal(); saveCarData(); renderVeiculo();
+});
+}
+
+function openAlertForm(id){
+const editing = id!=null;
+const a = editing ? MAINT_ALERTS.find(x=>x.id===id) : {nome:'', tipo:'tempo', intervaloMeses:6, intervaloKm:5000, ultimaRealizacao:'', kmNaRealizacao:''};
+const body = `
+<div class="field full"><label class="field-label">Peça / Item</label><input type="text" id="fmAlNome" class="full" value="${(a.nome||'').replace(/"/g,'&quot;')}" placeholder="ex: Troca de Óleo, Pneus, Filtro de Ar"></div>
+<div class="field full"><label class="field-label">Tipo de Alerta</label>
+<div class="switch-radio">
+<input type="radio" name="alTipo" id="alTipoTempo" value="tempo" ${a.tipo==='tempo'?'checked':''}><label for="alTipoTempo">Por Tempo</label>
+<input type="radio" name="alTipo" id="alTipoKm" value="km" ${a.tipo==='km'?'checked':''}><label for="alTipoKm">Por Quilometragem</label>
+<input type="radio" name="alTipo" id="alTipoAmbos" value="ambos" ${a.tipo==='ambos'?'checked':''}><label for="alTipoAmbos">Tempo + Km</label>
+</div>
+</div>
+<div class="field full" id="alBoxMeses"><label class="field-label">Intervalo (meses)</label><input type="number" id="fmAlMeses" class="full" min="1" value="${a.intervaloMeses||''}"></div>
+<div class="field full" id="alBoxKm"><label class="field-label">Intervalo (quilômetros)</label><input type="number" id="fmAlKm" class="full" min="1" step="500" value="${a.intervaloKm||''}"></div>
+<div class="field full"><label class="field-label">Última realização (data)</label><input type="date" id="fmAlData" class="full" value="${a.ultimaRealizacao||''}"></div>
+<div class="field full"><label class="field-label">Quilometragem na última realização</label><input type="number" id="fmAlKmReal" class="full" min="0" step="1" value="${a.kmNaRealizacao||''}"></div>
+<div style="display:flex; gap:10px; margin-top:14px;">
+<button class="btn primary" id="fmAlSave" style="flex:1;">${editing?'Salvar Alterações':'Adicionar Alerta'}</button>
+${editing?'<button class="btn" id="fmAlDelete" style="color:var(--danger-light);">Excluir</button>':''}
+</div>`;
+openModal(editing?'Editar Alerta de Manutenção':'Novo Alerta de Manutenção', body);
+
+function toggleBoxes(){
+const tipo = document.querySelector('input[name="alTipo"]:checked').value;
+document.getElementById('alBoxMeses').style.display = (tipo==='tempo'||tipo==='ambos')?'block':'none';
+document.getElementById('alBoxKm').style.display = (tipo==='km'||tipo==='ambos')?'block':'none';
+}
+document.querySelectorAll('input[name="alTipo"]').forEach(r=>r.addEventListener('change', toggleBoxes));
+toggleBoxes();
+
+document.getElementById('fmAlSave').addEventListener('click', ()=>{
+const nome = document.getElementById('fmAlNome').value.trim();
+const tipo = document.querySelector('input[name="alTipo"]:checked').value;
+const intervaloMeses = tipo!=='km' ? parseInt(document.getElementById('fmAlMeses').value)||0 : 0;
+const intervaloKm = tipo!=='tempo' ? parseInt(document.getElementById('fmAlKm').value)||0 : 0;
+const ultimaRealizacao = document.getElementById('fmAlData').value || '';
+const kmNaRealizacao = document.getElementById('fmAlKmReal').value ? parseFloat(document.getElementById('fmAlKmReal').value) : null;
+if(!nome || (intervaloMeses<=0 && intervaloKm<=0)){ alert('Informe o item e ao menos um intervalo (tempo ou quilometragem).'); return; }
+if(editing) Object.assign(a, {nome, tipo, intervaloMeses, intervaloKm, ultimaRealizacao, kmNaRealizacao});
+else MAINT_ALERTS.push({id:idCounter++, nome, tipo, intervaloMeses, intervaloKm, ultimaRealizacao, kmNaRealizacao});
+closeModal(); saveCarData(); renderVeiculo();
+});
+
+if(editing) document.getElementById('fmAlDelete').addEventListener('click', ()=>{
+if(confirm('Excluir este alerta?')){ MAINT_ALERTS = MAINT_ALERTS.filter(x=>x.id!==id); closeModal(); saveCarData(); renderVeiculo(); }
+});
+}
+
+function registerAlertDone(id){
+const a = MAINT_ALERTS.find(x=>x.id===id);
+if(!a) return;
+const curKm = currentOdometer();
+const body = `
+<div class="field full"><label class="field-label">Data da realização</label><input type="date" id="fmDoneData" class="full" value="${todayStr()}"></div>
+<div class="field full"><label class="field-label">Quilometragem no momento</label><input type="number" id="fmDoneKm" class="full" min="0" step="1" value="${curKm}"></div>
+<div class="field full"><label class="field-label">Custo (R$, opcional)</label><input type="number" id="fmDoneCusto" class="full" min="0" step="0.01" value=""></div>
+<div style="display:flex; gap:10px; margin-top:14px;"><button class="btn primary" id="fmDoneSave" style="flex:1;">Registrar</button></div>`;
+openModal('Registrar Realização · '+a.nome, body);
+document.getElementById('fmDoneSave').addEventListener('click', ()=>{
+const data = document.getElementById('fmDoneData').value || todayStr();
+const km = parseFloat(document.getElementById('fmDoneKm').value)||curKm;
+const custo = parseFloat(document.getElementById('fmDoneCusto').value)||0;
+a.ultimaRealizacao = data;
+a.kmNaRealizacao = km;
+MANUTENCOES.push({id:idCounter++, data, descricao:a.nome, km, custo, origem:'alerta', alertaId:a.id});
+VEHICLE.odometroAtual = Math.max(VEHICLE.odometroAtual||0, km);
+closeModal(); saveCarData(); renderVeiculo();
+});
+}
+
+function deleteAlert(id){
+const a = MAINT_ALERTS.find(x=>x.id===id);
+if(a && confirm('Excluir o alerta "'+a.nome+'"?')){ MAINT_ALERTS = MAINT_ALERTS.filter(x=>x.id!==id); saveCarData(); renderVeiculo(); }
+}
+
+function openAbastecimentoForm(id){
+const editing = id!=null;
+const last = ABASTECIMENTOS.slice().sort((a,b)=>b.data.localeCompare(a.data))[0];
+const curKm = currentOdometer();
+const a = editing ? ABASTECIMENTOS.find(x=>x.id===id) : {data: todayStr(), posto:'', kmIni: last?last.kmFim:curKm, kmFim:'', litros:'', valor:''};
+const body = `
+<div class="field full"><label class="field-label">Data</label><input type="date" id="fmAbData" class="full" value="${a.data}"></div>
+<div class="field full"><label class="field-label">Posto (opcional)</label><input type="text" id="fmAbPosto" class="full" value="${(a.posto||'').replace(/"/g,'&quot;')}" placeholder="ex: Posto Shell"></div>
+<div class="field full"><label class="field-label">Quilometragem Inicial (odômetro no abastecimento)</label><input type="number" id="fmAbKmIni" class="full" min="0" step="1" value="${a.kmIni}"></div>
+<div class="field full"><label class="field-label">Quilometragem Final (fim do tanque / próximo abastecimento)</label><input type="number" id="fmAbKmFim" class="full" min="0" step="1" value="${a.kmFim}"></div>
+<div class="field full"><label class="field-label">Litros abastecidos</label><input type="number" id="fmAbLitros" class="full" min="0" step="0.01" value="${a.litros}"></div>
+<div class="field full"><label class="field-label">Valor (R$)</label><input type="number" id="fmAbValor" class="full" min="0" step="0.01" value="${a.valor}"></div>
+<div style="font-size:11.5px; color:var(--muted);" id="fmAbPreview"></div>
+<div style="display:flex; gap:10px; margin-top:14px;">
+<button class="btn primary" id="fmAbSave" style="flex:1;">${editing?'Salvar Alterações':'Adicionar Abastecimento'}</button>
+${editing?'<button class="btn" id="fmAbDelete" style="color:var(--danger-light);">Excluir</button>':''}
+</div>`;
+openModal(editing?'Editar Abastecimento':'Novo Abastecimento', body);
+
+function updatePreview(){
+const kmIni=parseFloat(document.getElementById('fmAbKmIni').value)||0;
+const kmFim=parseFloat(document.getElementById('fmAbKmFim').value)||0;
+const litros=parseFloat(document.getElementById('fmAbLitros').value)||0;
+const valor=parseFloat(document.getElementById('fmAbValor').value)||0;
+const dist=kmFim-kmIni;
+const cons=litros>0&&dist>0?dist/litros:0;
+const pl=litros>0?valor/litros:0;
+document.getElementById('fmAbPreview').innerHTML = dist>0
+? `Distância: <b>${dist.toLocaleString('pt-BR')} km</b> · Consumo: <b>${cons.toFixed(2)} km/L</b> · Preço médio: <b>${fmtBRL(pl)}/L</b>`
+: '<span style="color:var(--muted-2);">Informe o quilômetro final (fim do tanque) maior que o inicial para calcular o consumo.</span>';
+}
+['fmAbKmIni','fmAbKmFim','fmAbLitros','fmAbValor'].forEach(pid=>document.getElementById(pid).addEventListener('input', updatePreview));
+updatePreview();
+
+document.getElementById('fmAbSave').addEventListener('click', ()=>{
+const data = document.getElementById('fmAbData').value;
+const posto = document.getElementById('fmAbPosto').value.trim();
+const kmIni = parseFloat(document.getElementById('fmAbKmIni').value)||0;
+const kmFim = parseFloat(document.getElementById('fmAbKmFim').value)||0;
+const litros = parseFloat(document.getElementById('fmAbLitros').value)||0;
+const valor = parseFloat(document.getElementById('fmAbValor').value)||0;
+if(!data || kmFim<=kmIni){ alert('Preencha data e quilometragem válidas (km final deve ser maior que o inicial).'); return; }
+if(!litros){ alert('Informe os litros abastecidos.'); return; }
+if(editing) Object.assign(a, {data, posto, kmIni, kmFim, litros, valor});
+else ABASTECIMENTOS.push({id:idCounter++, data, posto, kmIni, kmFim, litros, valor});
+VEHICLE.odometroAtual = Math.max(VEHICLE.odometroAtual||0, kmFim);
+closeModal(); saveCarData(); renderVeiculo();
+});
+
+if(editing) document.getElementById('fmAbDelete').addEventListener('click', ()=>{
+if(confirm('Excluir este abastecimento?')){ ABASTECIMENTOS = ABASTECIMENTOS.filter(x=>x.id!==id); closeModal(); saveCarData(); renderVeiculo(); }
+});
+}
+
+function deleteAbastecimento(id){
+if(confirm('Excluir este abastecimento?')){ ABASTECIMENTOS = ABASTECIMENTOS.filter(x=>x.id!==id); saveCarData(); renderVeiculo(); }
+}
+
+function openManutencaoForm(id){
+const editing = id!=null;
+const m = editing ? MANUTENCOES.find(x=>x.id===id) : {data: todayStr(), descricao:'', km: currentOdometer(), custo:'', origem:'manual', alertaId:null};
+const body = `
+<div class="field full"><label class="field-label">Data</label><input type="date" id="fmMnData" class="full" value="${m.data}"></div>
+<div class="field full"><label class="field-label">Descrição / Peça</label><input type="text" id="fmMnDesc" class="full" value="${(m.descricao||'').replace(/"/g,'&quot;')}" placeholder="ex: Troca de pneus, Revisão preventiva"></div>
+<div class="field full"><label class="field-label">Quilometragem</label><input type="number" id="fmMnKm" class="full" min="0" step="1" value="${m.km||''}"></div>
+<div class="field full"><label class="field-label">Custo (R$)</label><input type="number" id="fmMnCusto" class="full" min="0" step="0.01" value="${m.custo||''}"></div>
+<div style="display:flex; gap:10px; margin-top:14px;">
+<button class="btn primary" id="fmMnSave" style="flex:1;">${editing?'Salvar Alterações':'Registrar Manutenção'}</button>
+${editing?'<button class="btn" id="fmMnDelete" style="color:var(--danger-light);">Excluir</button>':''}
+</div>`;
+openModal(editing?'Editar Manutenção':'Registrar Manutenção', body);
+
+document.getElementById('fmMnSave').addEventListener('click', ()=>{
+const data = document.getElementById('fmMnData').value;
+const descricao = document.getElementById('fmMnDesc').value.trim();
+const km = parseFloat(document.getElementById('fmMnKm').value)||0;
+const custo = parseFloat(document.getElementById('fmMnCusto').value)||0;
+if(!data || !descricao){ alert('Preencha data e descrição.'); return; }
+if(editing) Object.assign(m, {data, descricao, km, custo});
+else MANUTENCOES.push({id:idCounter++, data, descricao, km, custo, origem:'manual', alertaId:null});
+VEHICLE.odometroAtual = Math.max(VEHICLE.odometroAtual||0, km);
+closeModal(); saveCarData(); renderVeiculo();
+});
+
+if(editing) document.getElementById('fmMnDelete').addEventListener('click', ()=>{
+if(confirm('Excluir este registro de manutenção?')){ MANUTENCOES = MANUTENCOES.filter(x=>x.id!==id); closeModal(); saveCarData(); renderVeiculo(); }
+});
+}
+
+function deleteManutencao(id){
+if(confirm('Excluir este registro de manutenção?')){ MANUTENCOES = MANUTENCOES.filter(x=>x.id!==id); saveCarData(); renderVeiculo(); }
+}
+
+/* ============================= SUPABASE · AUTENTICAÇÃO E PERSISTÊNCIA ============================= */
+let supabaseClient = null;
+let currentUser = null;
+let stateLoaded = false;
+let restoring = false;
+let saveTimer = null;
+
+function supabaseConfigured(){
+return SUPABASE_URL && SUPABASE_URL.indexOf('SEU-PROJETO') === -1 &&
+SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.indexOf('SUA-CHAVE') === -1;
+}
+
+function initSupabase(){
+if(!supabaseConfigured()){
+document.getElementById('authMsg').innerHTML = '<span style="color:#FFCC00;">Configuração pendente. Edite o arquivo <b>Painel_Financeiro_CFO_Edition_v2.html</b> e preencha <b>SUPABASE_URL</b> e <b>SUPABASE_ANON_KEY</b> com os dados do seu projeto Supabase (Project Settings &gt; API).</span>';
+document.getElementById('authSubmit').disabled = true;
+return;
+}
+supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+supabaseClient.auth.onAuthStateChange((event, session)=>{
+if(event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED'){
+currentUser = session ? session.user : null;
+if(currentUser) afterLogin();
+} else if(event === 'SIGNED_OUT'){
+showAuthScreen();
+}
+});
+supabaseClient.auth.getSession().then(({data})=>{
+if(data && data.session && !currentUser){
+currentUser = data.session.user;
+afterLogin();
+}
+});
+}
+
+function showAuthScreen(){
+stateLoaded = false;
+currentUser = null;
+document.getElementById('authScreen').style.display = 'flex';
+document.querySelector('.app').style.display = 'none';
+document.getElementById('btnLogout').style.display = 'none';
+}
+
+async function afterLogin(){
+if(stateLoaded) return;
+stateLoaded = true;
+currentUser = currentUser || (supabaseClient ? (await supabaseClient.auth.getUser()).data.user : null);
+document.getElementById('authScreen').style.display = 'none';
+document.querySelector('.app').style.display = 'flex';
+document.getElementById('btnLogout').style.display = '';
+await loadUserState();
+populateMonthSelects();
+populateCategoryFilters();
+renderAll();
+}
+
+function buildState(){
+return {
+transactions, accounts:ACCOUNTS, cards:CARDS, investments:INVESTMENTS, goals:GOALS,
+budgets:BUDGETS, cardInvoices, investmentEvolution, totalInvestido,
+vehicle:VEHICLE, maintAlerts:MAINT_ALERTS, abastecimentos:ABASTECIMENTOS, manutencoes:MANUTENCOES
+};
+}
+
+function applyState(s){
+if(!s) return;
+if(s.transactions) transactions = s.transactions;
+if(s.accounts) ACCOUNTS = s.accounts;
+if(s.cards) CARDS = s.cards;
+if(s.investments) INVESTMENTS = s.investments;
+if(s.goals) GOALS = s.goals;
+if(s.budgets) BUDGETS = s.budgets;
+if(s.cardInvoices) cardInvoices = s.cardInvoices;
+if(s.investmentEvolution) investmentEvolution = s.investmentEvolution;
+if(s.totalInvestido) totalInvestido = s.totalInvestido;
+if(s.vehicle) VEHICLE = s.vehicle;
+if(s.maintAlerts) MAINT_ALERTS = s.maintAlerts;
+if(s.abastecimentos) ABASTECIMENTOS = s.abastecimentos;
+if(s.manutencoes) MANUTENCOES = s.manutencoes;
+let maxId = 0;
+[transactions, ACCOUNTS, INVESTMENTS, GOALS, MAINT_ALERTS, ABASTECIMENTOS, MANUTENCOES].forEach(arr=>{
+(arr||[]).forEach(x=>{ if(x && x.id && x.id>maxId) maxId=x.id; });
+});
+idCounter = maxId + 1;
+}
+
+async function loadUserState(){
+if(!supabaseClient || !currentUser) return;
+const { data, error } = await supabaseClient.from('user_state').select('data').eq('user_id', currentUser.id).maybeSingle();
+if(error) console.error('Erro ao carregar dados do Supabase:', error.message);
+if(data && data.data){
+restoring = true;
+applyState(data.data);
+restoring = false;
+} else {
+if(SEED_DEMO_NEW_USER) seedDemoData();
+await saveState();
+}
+}
+
+function queueSave(){
+if(!supabaseClient || !currentUser || restoring) return;
+clearTimeout(saveTimer);
+saveTimer = setTimeout(saveState, 700);
+}
+
+async function saveState(){
+if(!supabaseClient || !currentUser) return;
+const payload = buildState();
+const { error } = await supabaseClient.from('user_state').upsert(
+{ user_id: currentUser.id, data: payload, updated_at: new Date().toISOString() },
+{ onConflict: 'user_id' }
+);
+if(error) console.error('Erro ao salvar no Supabase:', error.message);
+}
+
+/* TELA DE LOGIN */
+function toggleAuthMode(){
+const isSignup = document.querySelector('input[name="authMode"]:checked').value === 'signup';
+document.getElementById('authTitle').textContent = isSignup ? 'Criar conta' : 'Entrar';
+document.getElementById('authSubmit').textContent = isSignup ? 'Criar conta' : 'Entrar';
+document.getElementById('authPassConfirmBox').style.display = isSignup ? 'block' : 'none';
+document.getElementById('authMsg').textContent = '';
+}
+document.getElementById('authModeLogin').addEventListener('change', toggleAuthMode);
+document.getElementById('authModeSignup').addEventListener('change', toggleAuthMode);
+
+function authMessage(msg, color){
+const el = document.getElementById('authMsg');
+el.textContent = msg;
+el.style.color = color || 'var(--danger-light)';
+}
+
+async function handleAuthSubmit(){
+if(!supabaseClient){ authMessage('Configuração pendente. Preencha SUPABASE_URL e SUPABASE_ANON_KEY.'); return; }
+const email = document.getElementById('authEmail').value.trim();
+const password = document.getElementById('authPass').value;
+if(!email || !password){ authMessage('Informe e-mail e senha.'); return; }
+if(password.length < 6){ authMessage('A senha deve ter ao menos 6 caracteres.'); return; }
+const isSignup = document.querySelector('input[name="authMode"]:checked').value === 'signup';
+if(isSignup && password !== document.getElementById('authPassConfirm').value){ authMessage('As senhas não conferem.'); return; }
+authMessage('Aguarde...', 'var(--muted)');
+try{
+if(isSignup){
+const { data, error } = await supabaseClient.auth.signUp({ email, password });
+if(error) throw error;
+if(data.session){
+authMessage('Conta criada e conectada!', 'var(--olive-light)');
+} else {
+authMessage('Conta criada! Verifique seu e-mail para confirmar e depois entre.', 'var(--olive-light)');
+document.querySelector('input[name="authMode"][value="login"]').checked = true;
+toggleAuthMode();
+}
+} else {
+const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+if(error) throw error;
+}
+} catch(err){
+authMessage('Erro: ' + (err.message || 'Falha na autenticação.'));
+}
+}
+document.getElementById('authSubmit').addEventListener('click', handleAuthSubmit);
+document.getElementById('authEmail').addEventListener('keydown', e=>{ if(e.key==='Enter') handleAuthSubmit(); });
+document.getElementById('authPass').addEventListener('keydown', e=>{ if(e.key==='Enter') handleAuthSubmit(); });
+document.getElementById('authPassConfirm').addEventListener('keydown', e=>{ if(e.key==='Enter') handleAuthSubmit(); });
+
+document.getElementById('btnLogout').addEventListener('click', async ()=>{
+if(supabaseClient) await supabaseClient.auth.signOut();
+showAuthScreen();
+});
+
+/* ============================= RENDER ALL ============================= */
+function renderAll(){
+const activeTab = document.querySelector('.tab.active').id;
+if(activeTab === 'tab-dashboard') renderDashboard();
+else if(activeTab === 'tab-transacoes') renderTransacoes();
+else if(activeTab === 'tab-orcamento') renderOrcamento();
+else if(activeTab === 'tab-comparativo') renderComparativo();
+else if(activeTab === 'tab-contas') renderContas();
+else if(activeTab === 'tab-cartoes') renderCartoes();
+else if(activeTab === 'tab-investimentos') renderInvestimentos();
+else if(activeTab === 'tab-metas') renderMetas();
+else if(activeTab === 'tab-veiculo') renderVeiculo();
+else if(activeTab === 'tab-dre') renderDre();
+else if(activeTab === 'tab-balanco') renderBalanco();
+queueSave();
+}
+
+// Inicialização
+initSupabase();
+</script>
+<script type="module" src="./Painel de Controle Financeiro Pessoal - CFO Edition_files/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;3c7f84125ad544deae046fd599aeda84&quot;,&quot;r&quot;:1}" crossorigin="anonymous"></script>
+
+</body></html>
